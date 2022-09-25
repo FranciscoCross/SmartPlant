@@ -11,6 +11,7 @@ void reconnect();
 void changeState(String messageTemp, int pin);
 double prome(uint8_t temp[], uint8_t N_filter);
 void pushData(uint8_t *tempArray, uint8_t newTemp, uint8_t N_fil);
+void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *topic, int min, int max);
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -19,13 +20,20 @@ char msg[50];
 int value = 0;
 
 uint8_t tempArray[20] = {0};
-uint8_t N_fil = 10;
+uint8_t N_fil = 5;
 uint8_t current_temp = 0; // Temperatura actual s
 uint8_t prom = 0;         // Promedio
 
+uint8_t humeArray[20] = {0};
+uint8_t current_hume = 0; // Temperatura actual s
+uint8_t promhume = 0;     // Promedio
+
 float nivelLuz = 0;
 float humedad = 0;
+float humedadSuelo = 0;
 float temperature = 0;
+int tiempoMuestras = 1;
+int pesoMuestras = 1;
 const int ledPin1 = 2;
 const int ledPin2 = 4;
 const int ledPin3 = 15;
@@ -49,7 +57,7 @@ const char *password = "01416015234";
 const char *mqtt_server = "192.168.0.240";
 
 const int analogRead1 = 34;
-
+const int analogRead2 = 35;
 //-------------SETUP--------------
 void setup()
 {
@@ -114,16 +122,47 @@ void callback(char *topic, byte *message, unsigned int length)
   //------------------Cuarto Output topic esp32/output4------------------
   if (String(topic) == "esp32/output4")
   {
-    Serial.print("Cambio de salida PWM");
-    Serial.println("messageTemp");
+    // Serial.print("Cambio de salida PWM");
+    // Serial.println("messageTemp");
     ledcWrite(ledChannel, messageTemp.toInt());
   }
   // AGREGAR MAS TOPICOS PARA PODER TENER MAS GPIO O CONFIG
   if (String(topic) == "esp32/output5")
   {
-    Serial.print("Cambio de NUmero del filtro");
-    Serial.println("messageTemp");
-    N_fil = messageTemp.toInt();
+    // Serial.print("Cambio de NUmero del filtro");
+    // Serial.println("messageTemp");
+    int aux = messageTemp.toInt();
+    if (0 < aux && aux < 20)
+    {
+      N_fil = aux;
+    }
+    // Serial.println(N_fil);
+  }
+  // AGREGAR MAS TOPICOS PARA PODER TENER MAS GPIO O CONFIG
+  if (String(topic) == "esp32/output6")
+  {
+    // Serial.print("Cambio de tiempo muestra");
+    // Serial.println("messageTemp");
+    int aux = messageTemp.toInt();
+    if (0 < aux && aux < 120)
+    {
+      long now = millis();
+      lastMsg = now;
+      tiempoMuestras = aux;
+    }
+  }
+  // AGREGAR MAS TOPICOS PARA PODER TENER MAS GPIO O CONFIG
+  if (String(topic) == "esp32/output7")
+  {
+    // Serial.print("Cambio de tiempo muestra");
+    // Serial.println("messageTemp");
+    int aux = messageTemp.toInt();
+    if (0 < aux && aux < 60)
+    {
+      long now = millis();
+      lastMsg = now;
+      pesoMuestras = aux;
+    }
   }
 }
 
@@ -148,7 +187,7 @@ void reconnect()
   while (!client.connected())
   {
     Serial.print("Intentando conexion MQTT...");
-    if (client.connect("ESP32Client", "mqtt", "fdlc11"))
+    if (client.connect("ESP32Client")) //, "mqtt", "fdlc11"))
     {
       Serial.println("Conectado");
       client.subscribe("esp32/output1");
@@ -156,6 +195,8 @@ void reconnect()
       client.subscribe("esp32/output3");
       client.subscribe("esp32/output4");
       client.subscribe("esp32/output5");
+      client.subscribe("esp32/output6");
+      client.subscribe("esp32/output7");
     }
     else
     {
@@ -176,41 +217,20 @@ void loop()
   client.loop();
 
   long now = millis();
-  if (now - lastMsg > 1000) // 1000ms de muestreo
+  if (now - lastMsg > tiempoMuestras * 1000 * pesoMuestras) // 1000ms de muestreo
   {
     lastMsg = now;
-    //------Senial Analogica para enviar al broquer
-    nivelLuz = 100 - analogRead(analogRead1) * 100 / 4095;
-    pushData(tempArray, nivelLuz, N_fil);
-    prom = prome(tempArray, N_fil);
-    //  Convertir el valor a char array
-    // Serial.printf("Luz Ambiente: %2.f%\n", prom);
-    char luzString[8];
-    dtostrf(prom, 1, 2, luzString);
-    // Serial.print("Temperatura2: ");
-    // Serial.println(luzString);
-    client.publish("esp32/nivelLuz", luzString); // esp32/nivelLuz
-
-    //------------Senial 2 que queremos enviar al broker-------------
-    //---------------------------------------------------------------
-    humedad = dht.readHumidity();
-    ;
-
-    // Convertir el valor a char array
     char humString[8];
-    dtostrf(humedad, 1, 2, humString);
-    Serial.printf("Luz Ambiente: %2.f%\n", humedad);
-    client.publish("esp32/humidity", humString); // esp32/humidity
-    //------------Senial 2 que queremos enviar al broker-------------
-    //---------------------------------------------------------------
-    temperature = dht.readTemperature();
-    ;
-
-    // Convertir el valor a char array
     char tempString[8];
+    mandarDatos(analogRead1, tempArray, N_fil, "esp32/nivelLuz", 0, 4095);
+    mandarDatos(analogRead2, humeArray, N_fil, "esp32/humedadSuelo", 2370, 4095);
+
+    humedad = dht.readHumidity();
+    dtostrf(humedad, 1, 2, humString);
+    client.publish("esp32/humidity", humString); // esp32/humidity
+
+    temperature = dht.readTemperature();
     dtostrf(temperature, 1, 2, tempString);
-    // Serial.print("Humedad: ");
-    // Serial.println(humString);
     client.publish("esp32/temperature", tempString); // esp32/temperature
   }
 }
@@ -241,4 +261,18 @@ void pushData(uint8_t *tempArray, uint8_t newTemp, uint8_t N_fil)
     tempArray[i] = tempArray[i - 1];
   }
   tempArray[0] = newTemp;
+}
+void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *topic, int min, int max)
+{
+  float dato;
+  char datoString[8];
+  for (size_t i = 0; i < N_fil; i++)
+  {
+    delay(100);
+    dato = 100 - map(analogRead(Read), min, max, 0, 100);
+    pushData(datoArray, dato, N_fil);
+  }
+  prom = prome(datoArray, N_fil);
+  dtostrf(prom, 1, 2, datoString);
+  client.publish(topic, datoString);
 }
