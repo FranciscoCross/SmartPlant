@@ -19,6 +19,7 @@ long lastMsg = 0;
 char msg[50];
 int value = 0;
 // add ccoment
+// add ccoment2
 uint8_t tempArray[20] = {0};
 uint8_t N_fil = 5;
 uint8_t current_temp = 0; // Temperatura actual s
