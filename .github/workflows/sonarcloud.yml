@@ -3,9 +3,7 @@ on:
   push:
     branches: [ "main" ]
     paths:
-      - 'src/*'
-      - 'include/*'
-      - 'test/*'
+      - 'clientBroker/*'
   pull_request:
     branches: [ "main" ]
 
