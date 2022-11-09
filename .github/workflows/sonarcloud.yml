@@ -1,11 +1,14 @@
 on:
-  # Trigger analysis when pushing in master or pull requests, and when creating
-  # a pull request.
+  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches:
-      - master
+    branches: [ "main" ]
+    paths:
+      - 'src/*'
+      - 'include/*'
+      - 'test/*'
   pull_request:
-      types: [opened, synchronize, reopened]
+    branches: [ "main" ]
+
 name: Main Workflow
 jobs:
   sonarcloud:
