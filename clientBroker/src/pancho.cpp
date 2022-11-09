@@ -1,3 +1,4 @@
+/*
 #include <Arduino.h>
 #include <WiFi.h>
 #include <PubSubClient.h>
@@ -256,7 +257,7 @@ double prome(uint8_t temp[], uint8_t N_filter)
  * @param newTemp
  * @param N_fil
  */
-void pushData(uint8_t *tempArray, uint8_t newTemp, uint8_t N_fil)
+/*void pushData(uint8_t *tempArray, uint8_t newTemp, uint8_t N_fil)
 {
   // Corro el valor anterior en el arreglo per copio todo uno a la derecha, luego pongo el valor recibido en este en CERO como en mas actual
   for (int i = (N_fil - 1); i > 0; i--)
@@ -279,3 +280,4 @@ void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *
   dtostrf(prom, 1, 2, datoString);
   client.publish(topic, datoString);
 }
+*/
