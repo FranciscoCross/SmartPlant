@@ -31,4 +31,5 @@ jobs:
           WIFI_SSID: ${{ secrets.WIFI_SSID }}
           WIFI_PASS: ${{ secrets.WIFI_PASS }}
         run: |
+          cd ./clientBroker
           pio run
