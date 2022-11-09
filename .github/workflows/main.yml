@@ -27,6 +27,7 @@ jobs:
           pip install platformio
           pip install PyGithub
       - name: "build code"
-        path: ~/clientBroker
+        with:
+          path: ~/clientBroker
         run: |
           pio run
