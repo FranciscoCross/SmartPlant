@@ -27,9 +27,6 @@ jobs:
           pip install platformio
           pip install PyGithub
       - name: "build code"
-        env:
-          WIFI_SSID: ${{ secrets.WIFI_SSID }}
-          WIFI_PASS: ${{ secrets.WIFI_PASS }}
+        path: ~/clientBroker
         run: |
-          cd ./clientBroker
           pio run
