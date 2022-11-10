@@ -21,6 +21,7 @@
 void start_ota_webserver(void);
 
 int humidity = 0;
+AsyncWebServer server(80);
 
 void setup(void) {
     pinMode(LED, OUTPUT);
@@ -59,8 +60,6 @@ void loop(void) {
     Serial.println(humidity);*/
     delay(DELAY);
 }
-
-AsyncWebServer server(80);
 
 void start_ota_webserver(void)
 {
