@@ -25,7 +25,7 @@ void loop(void) {
 void setup()
 {
   Serial.begin(9600);
-  setup_wifi();
+  setup_wifi(); //ESTA LA BORRE PORQUE start_ota_webserver() HACE LO MISMO PARA EL WEBSERVER
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 
