@@ -1,40 +1,20 @@
-#include "param.h"
-#include "functions.h"
-
-int humidity = 0;
+#include "param.hpp"
+#include "functions.hpp"
 
 void setup(void) {
-    pinMode(LED, OUTPUT);
-    Serial.begin(115200);
+  pinMode(LED_ONBOARD, OUTPUT);
+  Serial.begin(115200);
 
-    start_ota_webserver();  
-}
-
-void loop(void) {
-    digitalWrite(LED, !digitalRead(LED));
-    /*humidity = analogRead(HUMIDITY_SENSOR);
-    Serial.println("");
-    Serial.print("Sensor de humedad: ");
-    Serial.println(humidity);*/
-    delay(DELAY);
-}
-
-/*
-
-//-------------SETUP--------------
-void setup()
-{
-  Serial.begin(9600);
-  setup_wifi(); //ESTA LA BORRE PORQUE start_ota_webserver() HACE LO MISMO PARA EL WEBSERVER
+  start_ota_webserver();  
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 
-  pinMode(ledPin1, OUTPUT);
-  pinMode(ledPin2, OUTPUT);
-  pinMode(ledPin3, OUTPUT);
+  pinMode(LED_1, OUTPUT);
+  pinMode(LED_2, OUTPUT);
+  pinMode(LED_3, OUTPUT);
 
-  ledcSetup(ledChannel, freq, resolution);
-  ledcAttachPin(ledPin4, ledChannel);
+  ledcSetup(PWM_LED_CHANNEL, PWM_FREQ, PWM_RESOLUTION);
+  ledcAttachPin(PWM_LED, PWM_LED_CHANNEL);
   dht.begin();
 }
 
@@ -52,8 +32,8 @@ void loop()
     lastMsg = now;
     char humString[8];
     char tempString[8];
-    mandarDatos(analogRead1, tempArray, N_fil, "esp32/nivelLuz", 0, 4095);
-    mandarDatos(analogRead2, humeArray, N_fil, "esp32/humedadSuelo", 2370, 4095);
+    mandarDatos(ANALOG_1, tempArray, N_fil, "esp32/nivelLuz", 0, 4095);
+    mandarDatos(ANALOG_2, humeArray, N_fil, "esp32/humedadSuelo", 2370, 4095);
 
     humedad = dht.readHumidity();
     dtostrf(humedad, 1, 2, humString);
@@ -62,7 +42,19 @@ void loop()
     temperature = dht.readTemperature();
     dtostrf(temperature, 1, 2, tempString);
     client.publish("esp32/temperature", tempString); // esp32/temperature
+
+    digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD));
   }
+}
+
+/*
+void loop(void) {
+    digitalWrite(LED, !digitalRead(LED));
+    //humedad = analogRead(HUMIDITY_SENSOR);
+    //Serial.println("");
+    //Serial.print("Sensor de humedad: ");
+    //Serial.println(humedad);
+    delay(DELAY);
 }
 */
 

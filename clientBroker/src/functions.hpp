@@ -1,17 +1,40 @@
 /*
 Functions.h: se configuran las funciones y dependencias
 */
-#ifndef functions_h
-#define functions_h
+#ifndef functions_hpp
+#define functions_hpp
 
 #include <Arduino.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <PubSubClient.h>
 #include <Wire.h>
 #include <DHT.h>
+
+extern const char *mqtt_server;
+
+extern long lastMsg;
+extern char msg[50];
+extern int value;
+
+extern float nivelLuz;
+extern float humedad;
+extern float humedadSuelo;
+extern float temperature;
+extern int tiempoMuestras;
+extern int pesoMuestras;
+//---------------------------------
+
+extern uint8_t tempArray[20];
+extern uint8_t N_fil;
+extern uint8_t current_temp; // Temperatura actual s
+extern uint8_t prom;         // Promedio
+extern uint8_t humeArray[20];
+extern uint8_t current_hume; // Temperatura actual s
+extern uint8_t promhume;     // Promedio
 
 void start_ota_webserver(void);
 void callback(char *topic, byte *message, unsigned int length);

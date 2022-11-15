@@ -1,54 +1,41 @@
-#include "functions.h"
-#include "param.h"
+#include "functions.hpp"
+#include "param.hpp"
 
 #include <AsyncElegantOTA.h>
 
+//--ESTAS SON LAS QUE DAN ERRORES--//
+#define DHTPIN 22
+#define DHTTYPE DHT11
+DHT dht(DHTPIN, DHTTYPE);
 AsyncWebServer server(80);
+WiFiClient espClient;
+PubSubClient client(espClient);
+//--HASTA ACA SON LAS QUE DAN ERRORES--//
+
 //Se toman las credenciales WiFi de las variables de entorno. Ver platformio.ini, sección build_flags
 const char* ssid = WIFI_SSID;
 const char* password = WIFI_PASS;
 
-WiFiClient espClient;
-PubSubClient client(espClient);
+//------------IP BROKER MQTT----------
+const char *mqtt_server = "192.168.0.240";
+
 long lastMsg = 0;
-char msg[50];
 int value = 0;
-// add ccoment
-// add ccoment2
-// add ccoment2s
-// add ccoment3
-uint8_t tempArray[20] = {0};
-uint8_t N_fil = 5;
-uint8_t current_temp = 0; // Temperatura actual s
-uint8_t prom = 0;         // Promedio
-
-uint8_t humeArray[20] = {0};
-uint8_t current_hume = 0; // Temperatura actual s
-uint8_t promhume = 0;     // Promedio
-
 float nivelLuz = 0;
 float humedad = 0;
 float humedadSuelo = 0;
 float temperature = 0;
 int tiempoMuestras = 1;
 int pesoMuestras = 1;
-const int ledPin1 = 2;
-const int ledPin2 = 4;
-const int ledPin3 = 15;
-//-------------PWM-----------------
-const int ledPin4 = 16;
-const int freq = 5000;
-const int ledChannel = 0;
-const int resolution = 8;
 //---------------------------------
 
-DHT dht(DHTPIN, DHTTYPE);
-
-//------------IP BROKER MQTT----------
-const char *mqtt_server = "192.168.0.240";
-
-const int analogRead1 = 34;
-const int analogRead2 = 35;
+uint8_t tempArray[20] = {0};
+uint8_t N_fil = 5;
+uint8_t current_temp = 0; // Temperatura actual s
+uint8_t prom = 0;         // Promedio
+uint8_t humeArray[20] = {0};
+uint8_t current_hume = 0; // Temperatura actual s
+uint8_t promhume = 0;     // Promedio
 
 void start_ota_webserver(void)
 {
@@ -92,24 +79,24 @@ void callback(char *topic, byte *message, unsigned int length)
   //------------------Primer Output topic esp32/output1------------------
   if (String(topic) == "esp32/output1")
   {
-    changeState(messageTemp, ledPin1);
+    changeState(messageTemp, LED_1);
   }
   //------------------Segundo Output topic esp32/output2------------------
   if (String(topic) == "esp32/output2")
   {
-    changeState(messageTemp, ledPin2);
+    changeState(messageTemp, LED_2);
   }
   //------------------Tercer Output topic esp32/output3------------------
   if (String(topic) == "esp32/output3")
   {
-    changeState(messageTemp, ledPin3);
+    changeState(messageTemp, LED_3);
   }
   //------------------Cuarto Output topic esp32/output4------------------
   if (String(topic) == "esp32/output4")
   {
     // Serial.print("Cambio de salida PWM");
     // Serial.println("messageTemp");
-    ledcWrite(ledChannel, messageTemp.toInt());
+    ledcWrite(PWM_LED_CHANNEL, messageTemp.toInt());
   }
   // AGREGAR MAS TOPICOS PARA PODER TENER MAS GPIO O CONFIG
   if (String(topic) == "esp32/output5")
