@@ -1,6 +1,3 @@
-# SmartPlant
-Este proyecto consiste en un sistema de monitoreo de variables aptas para cultivar.
-
 # Pipeline-ESP32
 El objetivo de este proyecto es crear un Pipeline DevOps para dispositivos de Internet de las Cosas (Internet of Things, IoT), en este caso un microcontrolador ESP32. El objetivo principal es tener un workflow con una serie de acciones que se desencadenan cuando se pushean cambios en la carpeta de codigo fuente del repositorio.
 
@@ -20,7 +17,7 @@ sudo apt install docker-compose
 Para Windows (u otro SO) por favor diríjase a [Docker Documentation](https://docs.docker.com/desktop/windows/install).
 
 ### Credenciales
-Por motivos de seguridad debe crear un GitHub Access Token, el cual le da permisos sobre su cuenta de GitHub para permitir que un self-hosted runner pueda ejecutar las tareas (jobs) del pipeline.
+Por motivos de seguridad debe crear un GitHub Access Token, el cual le da permisos sobre su cuenta de GutHub para permitir que un self-hosted runner pueda ejecutar las tareas (jobs) del pipeline.
 Cree un archivo llamado ".env" en la carpeta raíz de su repositorio. Nótese que este archivo está incluido en el .gitignore, ya que sus credenciales no se deben compartir. En este archivo debe agregar:
 ```
 RUNNER_REPOSITORY_URL=URL of your Forked Repository

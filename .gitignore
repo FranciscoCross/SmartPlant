@@ -1,0 +1,7 @@
+.vscode
+/obj
+/bin
+.pio
+sdkconfig.nodemcu-32s
+.env
+/clientBroker/src/credentials.h
