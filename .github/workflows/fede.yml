@@ -32,8 +32,10 @@ jobs:
           pip install PyGithub
       - name: "build code"
         env:
-          WIFI_SSID: ${{ secrets.WIFI_SSID }}
-          WIFI_PASS: ${{ secrets.WIFI_PASS }}
+          WIFI_SSID: ${{ secrets.WIFI_SSID_FEDE }}
+          WIFI_PASS: ${{ secrets.WIFI_PASS_FEDE }}
+          MQTT_USER: ${{ secrets.MQTT_USER_FEDE }}
+          MQTT_PASS: ${{ secrets.MQTT_PASS_FEDE }}
         run: |
           pio run
 #pio test works for USB serial connection but not for OTA WIFI
@@ -42,7 +44,9 @@ jobs:
 #          pio test -vvv --environment nodemcu-32s
       - name: "upload to board"
         env:
-          WIFI_SSID: ${{ secrets.WIFI_SSID }}
-          WIFI_PASS: ${{ secrets.WIFI_PASS }}
+          WIFI_SSID: ${{ secrets.WIFI_SSID_FEDE }}
+          WIFI_PASS: ${{ secrets.WIFI_PASS_FEDE }}
+          MQTT_USER: ${{ secrets.MQTT_USER_FEDE }}
+          MQTT_PASS: ${{ secrets.MQTT_PASS_FEDE }}
         run: |
           pio run --target upload --environment nodemcu-32s
