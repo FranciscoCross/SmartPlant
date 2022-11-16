@@ -153,7 +153,7 @@ void reconnect()
   // Bucle hasta que se reconecte
   while (!client.connected())
   {
-    Serial.print("Intentando conexion MQTT...");
+    Serial.print("Intentando conexion MQTT... ");
     if (client.connect("ESP32Client", mqtt_user, mqtt_pass))
     {
       Serial.println("Conectado");
@@ -169,7 +169,7 @@ void reconnect()
     {
       Serial.print("Fallo, rc=");
       Serial.print(client.state());
-      Serial.println("Intentando de nuevo en 5 segundos...");
+      Serial.println(" Intentando de nuevo en 5 segundos...");
       delay(5000);
     }
   }
