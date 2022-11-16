@@ -1,23 +1,19 @@
 #include "functions.hpp"
 #include "param.hpp"
-
 #include <AsyncElegantOTA.h>
 
-//--ESTAS SON LAS QUE DAN ERRORES--//
-#define DHTPIN 22
-#define DHTTYPE DHT11
-DHT dht(DHTPIN, DHTTYPE);
 AsyncWebServer server(80);
 WiFiClient espClient;
 PubSubClient client(espClient);
-//--HASTA ACA SON LAS QUE DAN ERRORES--//
 
-//Se toman las credenciales WiFi de las variables de entorno. Ver platformio.ini, sección build_flags
+//Se toman las credenciales de las variables de entorno. Ver platformio.ini, sección build_flags
 const char* ssid = WIFI_SSID;
 const char* password = WIFI_PASS;
+const char* mqtt_user = MQTT_USER;
+const char* mqtt_pass = MQTT_PASS;
 
-//------------IP BROKER MQTT----------
-const char *mqtt_server = "192.168.0.240";
+//Dirección IP del BROKER MQTT
+const char *mqtt_server = "terrariapancho.ddns.net";
 
 long lastMsg = 0;
 int value = 0;
@@ -27,7 +23,6 @@ float humedadSuelo = 0;
 float temperature = 0;
 int tiempoMuestras = 1;
 int pesoMuestras = 1;
-//---------------------------------
 
 uint8_t tempArray[20] = {0};
 uint8_t N_fil = 5;
@@ -39,28 +34,28 @@ uint8_t promhume = 0;     // Promedio
 
 void start_ota_webserver(void)
 {
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(ssid, password);
-        Serial.println("");
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
+      Serial.println("");
 
-    // Wait for connection
-    while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
-    Serial.print(".");
-    }
-    Serial.println("");
-    Serial.print("Conectado a: ");
-    Serial.println(ssid);
-    Serial.print("Dirección IP: ");
-    Serial.println(WiFi.localIP());
+  // Wait for connection
+  while (WiFi.status() != WL_CONNECTED) {
+  delay(500);
+  Serial.print(".");
+  }
+  Serial.println("");
+  Serial.print("Conectado a: ");
+  Serial.println(ssid);
+  Serial.print("Dirección IP: ");
+  Serial.println(WiFi.localIP());
 
-    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send(200, "text/plain", "Bienvenido a ESP32 over-the-air (OTA).");
-    });
-
-    AsyncElegantOTA.begin(&server);    // Start ElegantOTA
-    server.begin();
-    Serial.println("HTTP server listo");
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+  request->send(200, "text/plain", "Bienvenido a ESP32 over-the-air (OTA). Para actualizar el firmware de su ESP32 agregue /update en la dirección del navegador.");
+  });
+  //Inicia ElegantOTA
+  AsyncElegantOTA.begin(&server);    
+  server.begin();
+  Serial.println("HTTP server listo");
 }
 
 void callback(char *topic, byte *message, unsigned int length)
@@ -159,7 +154,7 @@ void reconnect()
   while (!client.connected())
   {
     Serial.print("Intentando conexion MQTT...");
-    if (client.connect("ESP32Client")) //, "mqtt", "fdlc11"))
+    if (client.connect("ESP32Client", mqtt_user, mqtt_pass))
     {
       Serial.println("Conectado");
       client.subscribe("esp32/output1");
@@ -174,7 +169,7 @@ void reconnect()
     {
       Serial.print("Fallo, rc=");
       Serial.print(client.state());
-      Serial.println("Intentando de nuevo en 5s");
+      Serial.println("Intentando de nuevo en 5 segundos...");
       delay(5000);
     }
   }

@@ -14,6 +14,11 @@ Functions.h: se configuran las funciones y dependencias
 #include <Wire.h>
 #include <DHT.h>
 
+extern DHT dht;
+extern AsyncWebServer server;
+extern WiFiClient espClient;
+extern PubSubClient client;
+
 extern const char *mqtt_server;
 
 extern long lastMsg;

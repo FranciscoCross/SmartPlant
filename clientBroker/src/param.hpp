@@ -5,7 +5,7 @@ Param.h: se configuran los parámetros del dispositivo
 #define param_hpp
 
 //Tiempo en ms para esperar antes de cambiar el estado del LED
-#define DELAY 2000
+#define DELAY 200
 //GPIO que se usa para el LED intermitente
 #define LED_ONBOARD 2
 #define LED_1 2
@@ -24,5 +24,9 @@ Param.h: se configuran los parámetros del dispositivo
 
 //GPIO que se usa para el sensor de humedad de suelo
 #define HUMIDITY_SENSOR 34
+
+//DHT Sensor de Humedad y Temperatura
+#define DHTPIN 22
+#define DHTTYPE DHT11
 
 #endif

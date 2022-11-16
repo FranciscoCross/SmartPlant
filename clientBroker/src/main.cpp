@@ -1,6 +1,8 @@
 #include "param.hpp"
 #include "functions.hpp"
 
+DHT dht(DHTPIN, DHTTYPE);
+
 void setup(void) {
   pinMode(LED_ONBOARD, OUTPUT);
   Serial.begin(115200);
@@ -27,7 +29,7 @@ void loop()
   client.loop();
 
   long now = millis();
-  if (now - lastMsg > tiempoMuestras * 1000 * pesoMuestras) // 1000ms de muestreo
+  if (now - lastMsg > tiempoMuestras * DELAY * pesoMuestras) // 1000ms de muestreo
   {
     lastMsg = now;
     char humString[8];
