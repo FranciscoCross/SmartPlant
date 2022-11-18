@@ -5,7 +5,7 @@ Param.h: se configuran los parámetros del dispositivo
 #define param_hpp
 
 //Tiempo en ms para esperar antes de cambiar el estado del LED
-#define DELAY 2000
+#define DELAY 3000
 //GPIO que se usa para el LED intermitente
 #define LED_ONBOARD 2
 #define LED_1 2
