@@ -39,7 +39,7 @@ jobs:
         run: |
           cd clientBroker
           pio pkg update
-          pio run
+          pio run --verbose
 #pio test works for USB serial connection but not for OTA WIFI
 #      - name: "unit test"
 #        run: |
