@@ -27,6 +27,7 @@ jobs:
           architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
       - name: Install Dependencies
         run: |
+          apt update
           python -m pip install --upgrade pip
           pip install virtualenv
           python3 -m venv runner-env
@@ -40,6 +41,7 @@ jobs:
           MQTT_USER: ${{ secrets.MQTT_USER_FEDE }}
           MQTT_PASS: ${{ secrets.MQTT_PASS_FEDE }}
         run: |
+          pwd
           cd clientBroker
           pio pkg update
           pio run --verbose
