@@ -1,7 +1,6 @@
 #include "param.hpp"
 
 #include <AsyncElegantOTA.h>
-
 #include <Arduino.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -21,10 +20,8 @@ double prome(uint8_t temp[], uint8_t N_filter);
 void pushData(uint8_t *tempArray, uint8_t newTemp, uint8_t N_fil);
 void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *topic, int min, int max);
 
-
 //-----------------Variables--------------------------------//
 DHT dht(DHTPIN, DHTTYPE);
-
 AsyncWebServer server(80);
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -77,18 +74,21 @@ void loop()
 {
   if (!client.connected())
   {
+    Serial.println("Cliente desconectado, intentando reconexión...");
     reconnect();
   }
   client.loop();
 
   long now = millis();
+  
   if (now - lastMsg > tiempoMuestras * DELAY * pesoMuestras) // 1000ms de muestreo
   {
     lastMsg = now;
+    
     char humString[8];
     char tempString[8];
     mandarDatos(ANALOG_1, tempArray, N_fil, "esp32/nivelLuz", 0, 4095);
-    mandarDatos(ANALOG_2, humeArray, N_fil, "esp32/humedadSuelo", 880, 1540); //2370, 4095);
+    mandarDatos(ANALOG_2, humeArray, N_fil, "esp32/humedadSuelo", 2370, 4095);//880, 1540); //2370, 4095);
 
     humedad = dht.readHumidity();
     dtostrf(humedad, 1, 2, humString);
@@ -136,7 +136,7 @@ void start_ota_webserver(void)
   Serial.println(WiFi.localIP());
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-  request->send(200, "text/plain", "Bienvenido a ESP32 over-the-air (OTA). Para actualizar el firmware de su ESP32 agregue /update en la dirección del navegador.");
+  request->send(200, "text/plain", "Bienvenido a ESP32 over-the-air (OTA). Para actualizar el firmware de su ESP32 agregue /update en la direccion del navegador.");
   });
   //Inicia ElegantOTA
   AsyncElegantOTA.begin(&server);    
@@ -240,7 +240,7 @@ void reconnect()
   while (!client.connected())
   {
     Serial.print("Intentando conexion MQTT... ");
-    if (client.connect("ESP32Client", mqtt_user, mqtt_pass))
+    if (client.connect("ESP32Client-fede", mqtt_user, mqtt_pass))
     {
       Serial.println("Conectado");
       client.subscribe("esp32/output1");
