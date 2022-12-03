@@ -78,7 +78,7 @@ void loop()
     reconnect();
   }
   client.loop();
-
+  /*
   long now = millis();
   
   if (now - lastMsg > tiempoMuestras * DELAY * pesoMuestras) // 1000ms de muestreo
@@ -103,7 +103,9 @@ void loop()
     //Serial.println("");
     //Serial.print("Sensor Humedad de Suelo: ");
     //Serial.println(analogRead(ANALOG_2));
-  }
+  }*/
+  digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD));
+  delay(DELAY);
 }
 
 /*
