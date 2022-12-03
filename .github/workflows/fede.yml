@@ -52,4 +52,4 @@ jobs:
         run: |
           pwd
           cd clientBroker
-          sudo pio run --target upload --environment nodemcu-32s
+          sudo pio run --verbose --target upload
