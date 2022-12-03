@@ -78,7 +78,7 @@ void loop()
     reconnect();
   }
   client.loop();
-  /*
+  
   long now = millis();
   
   if (now - lastMsg > tiempoMuestras * DELAY * pesoMuestras) // 1000ms de muestreo
@@ -99,13 +99,7 @@ void loop()
     client.publish("esp32/temperature", tempString); // esp32/temperature
 
     digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD));
-    // Test fede
-    //Serial.println("");
-    //Serial.print("Sensor Humedad de Suelo: ");
-    //Serial.println(analogRead(ANALOG_2));
-  }*/
-  digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD));
-  delay(DELAY);
+  }
 }
 
 /*
