@@ -37,9 +37,8 @@ jobs:
           MQTT_USER: ${{ secrets.MQTT_USER_FEDE }}
           MQTT_PASS: ${{ secrets.MQTT_PASS_FEDE }}
         run: |
-          pwd
           cd clientBroker
-          sudo pio pkg update
+#          sudo pio pkg update
           sudo pio run --verbose
 #pio test works for USB serial connection but not for OTA WIFI
 #      - name: "unit test"
@@ -52,4 +51,6 @@ jobs:
           MQTT_USER: ${{ secrets.MQTT_USER_FEDE }}
           MQTT_PASS: ${{ secrets.MQTT_PASS_FEDE }}
         run: |
-          pio run --target upload --environment nodemcu-32s
+          pwd
+          cd clientBroker
+          sudo pio run --target upload --environment nodemcu-32s
