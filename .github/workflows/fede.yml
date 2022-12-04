@@ -38,7 +38,8 @@ jobs:
           MQTT_PASS: ${{ secrets.MQTT_PASS_FEDE }}
         run: |
           cd clientBroker
-          pio run --verbose
+          sudo pio pkg update
+          sudo pio run --verbose
 #pio test works for USB serial connection but not for OTA WIFI
 #      - name: "unit test"
 #        run: |
@@ -52,4 +53,4 @@ jobs:
         run: |
           pwd
           cd clientBroker
-          pio run --verbose --target upload
+          sudo pio run --verbose --target upload
