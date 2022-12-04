@@ -38,16 +38,16 @@ void loop()
     
     char humString[8];
     char tempString[8];
-    mandarDatos(ANALOG_1, tempArray, N_fil, "esp32/nivelLuz", 0, 4095);
-    mandarDatos(ANALOG_2, humeArray, N_fil, "esp32/humedadSuelo", 2370, 4095);//880, 1540); //2370, 4095);
+    mandarDatos(ANALOG_1, tempArray, N_fil, "esp32/nivelLuzz", 0, 4095);
+    mandarDatos(ANALOG_2, humeArray, N_fil, "esp32/humedadSueloo", 2370, 4095);//880, 1540); //2370, 4095);
 
     humedad = dht.readHumidity();
     dtostrf(humedad, 1, 2, humString);
-    client.publish("esp32/humidity", humString); // esp32/humidity
+    client.publish("esp32/humidityy", humString); // esp32/humidity
 
     temperature = dht.readTemperature();
     dtostrf(temperature, 1, 2, tempString);
-    client.publish("esp32/temperature", tempString); // esp32/temperature
+    client.publish("esp32/temperaturee", tempString); // esp32/temperature
 
     digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD));
   }
