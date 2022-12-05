@@ -1,7 +1,7 @@
 #include "param.hpp"
 #include "functions.hpp"
 
-DHT dht(DHTPIN, DHTTYPE);
+//DHT dht(DHTPIN, DHTTYPE);
 
 //-----------------Arduino-Setup-y-Loop-------------------------//
 void setup(void) {
@@ -9,26 +9,31 @@ void setup(void) {
   Serial.begin(115200);
 
   start_ota_webserver();  
+  /*
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
 
   pinMode(LED_1, OUTPUT);
   pinMode(LED_2, OUTPUT);
   pinMode(LED_3, OUTPUT);
+  
 
-  //ledcSetup(PWM_LED_CHANNEL, PWM_FREQ, PWM_RESOLUTION);
-  //ledcAttachPin(PWM_LED, PWM_LED_CHANNEL);
-  //dht.begin();
+  ledcSetup(PWM_LED_CHANNEL, PWM_FREQ, PWM_RESOLUTION);
+  ledcAttachPin(PWM_LED, PWM_LED_CHANNEL);
+  dht.begin();
+  */
 }
 
 void loop()
 {
+  /*
   if (!client.connected())
   {
     Serial.println("Cliente desconectado, intentando reconexión...");
     reconnect();
   }
   client.loop();
+  */
   
   /*
   long now = millis();
