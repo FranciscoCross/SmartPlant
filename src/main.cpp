@@ -8,15 +8,14 @@ void setup(void) {
   pinMode(LED_ONBOARD, OUTPUT);
   Serial.begin(115200);
 
+  start_ota_webserver();
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
-
+  /*
   pinMode(LED_1, OUTPUT);
   pinMode(LED_2, OUTPUT);
   pinMode(LED_3, OUTPUT);
-  
-  start_ota_webserver();
-  
+  */  
   /*
   ledcSetup(PWM_LED_CHANNEL, PWM_FREQ, PWM_RESOLUTION);
   ledcAttachPin(PWM_LED, PWM_LED_CHANNEL);
