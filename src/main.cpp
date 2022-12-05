@@ -10,6 +10,7 @@ void setup(void) {
 
   start_ota_webserver();
   /*
+  //Al agregar estas lineas se rompe el upload desde el workflow
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
   

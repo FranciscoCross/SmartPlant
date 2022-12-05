@@ -37,7 +37,7 @@ jobs:
           MQTT_USER: ${{ secrets.MQTT_USER_FEDE }}
           MQTT_PASS: ${{ secrets.MQTT_PASS_FEDE }}
         run: |
-          sudo pio run --verbose
+          pio run --verbose
 #pio test works for USB serial connection but not for OTA WIFI
 #      - name: "unit test"
 #        run: |
@@ -50,4 +50,4 @@ jobs:
           MQTT_PASS: ${{ secrets.MQTT_PASS_FEDE }}
         run: |
           pwd
-          sudo pio run --target upload --environment nodemcu-32s
+          pio run --target upload --environment nodemcu-32s
