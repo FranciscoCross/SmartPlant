@@ -16,9 +16,9 @@ void setup(void) {
   pinMode(LED_2, OUTPUT);
   pinMode(LED_3, OUTPUT);
 
-  ledcSetup(PWM_LED_CHANNEL, PWM_FREQ, PWM_RESOLUTION);
-  ledcAttachPin(PWM_LED, PWM_LED_CHANNEL);
-  dht.begin();
+  //ledcSetup(PWM_LED_CHANNEL, PWM_FREQ, PWM_RESOLUTION);
+  //ledcAttachPin(PWM_LED, PWM_LED_CHANNEL);
+  //dht.begin();
 }
 
 void loop()
@@ -30,6 +30,7 @@ void loop()
   }
   client.loop();
   
+  /*
   long now = millis();
   
   if (now - lastMsg > tiempoMuestras * DELAY * pesoMuestras) // 1000ms de muestreo
@@ -50,7 +51,9 @@ void loop()
     client.publish("esp32/temperaturee", tempString); // esp32/temperature
 
     digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD));
-  }
+  }*/
+  digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD));
+  delay(DELAY);
 }
 
 /*
