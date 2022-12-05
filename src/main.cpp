@@ -9,9 +9,10 @@ void setup(void) {
   Serial.begin(115200);
 
   start_ota_webserver();
+  /*
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
-  /*
+  
   pinMode(LED_1, OUTPUT);
   pinMode(LED_2, OUTPUT);
   pinMode(LED_3, OUTPUT);
