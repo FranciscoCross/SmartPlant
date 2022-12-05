@@ -23,22 +23,17 @@ void setup(void) {
 
 void loop()
 {
-  
   if (!client.connected())
   {
     Serial.println("Cliente desconectado, intentando reconexión...");
     reconnect();
   }
-  client.loop();
-  
-  
+  client.loop(); 
   
   long now = millis();
-  
-  if (now - lastMsg > tiempoMuestras * DELAY * pesoMuestras) // 1000ms de muestreo
+  if (now - lastMsg > DELAY * tiempoMuestras * pesoMuestras) //Bucle de tiempo
   {
-    lastMsg = now;
-    
+    lastMsg = now;    
     char humString[8];
     char tempString[8];
     mandarDatos(ANALOG_1, tempArray, N_fil, "esp32/nivelLuzz", 0, 4095);
@@ -54,14 +49,12 @@ void loop()
 
     digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD));
   }
-  //digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD));
-  //delay(DELAY);
 }
 
 /*
 void loop(void) {
     digitalWrite(LED, !digitalRead(LED));
-    //humedad = analogRead(HUMIDITY_SENSOR);
+    //humedad = analogRead(ANALOG_1);
     //Serial.println("");
     //Serial.print("Sensor de humedad: ");
     //Serial.println(humedad);

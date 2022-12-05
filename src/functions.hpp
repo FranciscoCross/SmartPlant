@@ -31,7 +31,6 @@ extern float humedadSuelo;
 extern float temperature;
 extern int tiempoMuestras;
 extern int pesoMuestras;
-//---------------------------------
 
 extern uint8_t tempArray[20];
 extern uint8_t N_fil;

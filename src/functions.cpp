@@ -26,10 +26,10 @@ int pesoMuestras = 1;
 
 uint8_t tempArray[20] = {0};
 uint8_t N_fil = 5;
-uint8_t current_temp = 0; // Temperatura actual s
+uint8_t current_temp = 0; // Temperatura actual
 uint8_t prom = 0;         // Promedio
 uint8_t humeArray[20] = {0};
-uint8_t current_hume = 0; // Temperatura actual s
+uint8_t current_hume = 0; // Humedad actual
 uint8_t promhume = 0;     // Promedio
 
 void start_ota_webserver(void)

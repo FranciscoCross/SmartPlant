@@ -37,7 +37,7 @@ jobs:
           MQTT_USER: ${{ secrets.MQTT_USER_FEDE }}
           MQTT_PASS: ${{ secrets.MQTT_PASS_FEDE }}
         run: |
-          pio run --verbose
+          pio run
 #pio test works for USB serial connection but not for OTA WIFI
 #      - name: "unit test"
 #        run: |
