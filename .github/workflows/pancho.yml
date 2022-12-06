@@ -1,15 +1,15 @@
-name: Build and Upload Fede
+name: Build and Upload Pancho
 
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "fede" ]
+    branches: [ "main" ]
     paths:
       - 'src/*'
       - 'include/*'
       - 'test/*'
   pull_request:
-    branches: [ "fede" ]
+    branches: [ "main" ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -32,10 +32,10 @@ jobs:
 #          pip install PyGithub
       - name: "build code"
         env:
-          WIFI_SSID: ${{ secrets.WIFI_SSID_FEDE }}
-          WIFI_PASS: ${{ secrets.WIFI_PASS_FEDE }}
-          MQTT_USER: ${{ secrets.MQTT_USER_FEDE }}
-          MQTT_PASS: ${{ secrets.MQTT_PASS_FEDE }}
+          WIFI_SSID: ${{ secrets.WIFI_SSID }}
+          WIFI_PASS: ${{ secrets.WIFI_PASS }}
+          MQTT_USER: ${{ secrets.MQTT_USER }}
+          MQTT_PASS: ${{ secrets.MQTT_PASS }}
         run: |
           pio run
 #pio test works for USB serial connection but not for OTA WIFI
@@ -44,10 +44,10 @@ jobs:
 #          pio test -vvv --environment nodemcu-32s
       - name: "upload to board"
         env:
-          WIFI_SSID: ${{ secrets.WIFI_SSID_FEDE }}
-          WIFI_PASS: ${{ secrets.WIFI_PASS_FEDE }}
-          MQTT_USER: ${{ secrets.MQTT_USER_FEDE }}
-          MQTT_PASS: ${{ secrets.MQTT_PASS_FEDE }}
+          WIFI_SSID: ${{ secrets.WIFI_SSID }}
+          WIFI_PASS: ${{ secrets.WIFI_PASS }}
+          MQTT_USER: ${{ secrets.MQTT_USER }}
+          MQTT_PASS: ${{ secrets.MQTT_PASS }}
         run: |
           pwd
           pio run --target upload --environment nodemcu-32s
