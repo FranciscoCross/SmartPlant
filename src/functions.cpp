@@ -50,7 +50,7 @@ void start_ota_webserver(void)
   Serial.println(WiFi.localIP());
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-  request->send(200, "text/plain", "Bienvenido a ESP32 over-the-air (OTA). Para actualizar el firmware de su ESP32 agregue /update en la dirección del navegador.");
+  request->send(200, "text/plain", "Bienvenido a ESP32 over-the-air (OTA). Para actualizar el firmware de su ESP32 agregue /update en la direccion del navegador.");
   });
   //Inicia ElegantOTA
   AsyncElegantOTA.begin(&server);    
