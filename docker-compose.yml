@@ -2,13 +2,13 @@ version: "3.7"
 
 services:
   runner:
-    image: tcardonne/github-runner:ubuntu-20.04
+    image: feedehc/github-docker-runner
     container_name: runner-self-hosted
     privileged: true
     environment:
-      RUNNER_NAME: "my-runner"
+      RUNNER_NAME: "runner-esp32"
       RUNNER_REPOSITORY_URL: ${RUNNER_REPOSITORY_URL}
-      #RUNNER_ORGANIZATION_URL: ${RUNNER_ORGANIZATION_URL}
+      RUNNER_ORGANIZATION_URL: ${RUNNER_ORGANIZATION_URL}
       GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sockz
