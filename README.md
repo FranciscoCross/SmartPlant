@@ -60,6 +60,14 @@ Para desencadenar el workflow se necesita pushear cambios en las carpetas: **/sr
 Hay 2 tests simples que se realizan antes de cargar el código a la placa. El primero es chequear si el valor de DELAY es mayor o igual a 50 ms, y el segundo es si el valor de DELAY es menor o igual a 5000 ms.
 Si se elije un valor fuera del **rango válido de DELAY (50 - 5000ms)**, los tests fallarán y **el código no se cargará en la placa**, simulando una prevención de posibles daños.
 
+## REVISARR
+Variables de Entorno:
+- WIFI_SSID
+- WIFI_PASS
+- MQTT_USER
+- MQTT_PASS
+- ESP32_IP1
+
 ## Referencias
 - [Docker](https://www.docker.com)
 - [TCardonne GitHub Runner](https://registry.hub.docker.com/r/tcardonne/github-runner)
