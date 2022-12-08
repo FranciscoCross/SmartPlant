@@ -1,0 +1,57 @@
+name: Build and Upload
+
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+#  push:
+#    branches: [ "main" ]
+#    paths:
+#      - 'src/*'
+#      - 'include/*'
+#      - 'test/*'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'src/*'
+      - 'include/*'
+      - 'test/*'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: "Build-Test-Upload"
+    runs-on: self-hosted    
+    steps:    
+      - uses: actions/checkout@v3
+#      - name: "Setup Python"
+#        uses: actions/setup-python@v4
+#        with:
+#          python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+#          architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
+#      - name: Install Dependencies
+#        run: |
+#          python -m pip install --upgrade pip
+#          pip install platformio
+#          pip install PyGithub
+#      - name: "build code"
+#        env:
+#          WIFI_SSID: ${{ secrets.WIFI_SSID }}
+#          WIFI_PASS: ${{ secrets.WIFI_PASS }}
+#          MQTT_USER: ${{ secrets.MQTT_USER }}
+#          MQTT_PASS: ${{ secrets.MQTT_PASS }}
+#        run: |
+#          pio run
+#pio test works for USB serial connection but not for OTA WIFI
+#      - name: "unit test"
+#        run: |
+#          pio test -vvv --environment nodemcu-32s
+      - name: "upload to board"
+        env:
+          WIFI_SSID: ${{ secrets.WIFI_SSID }}
+          WIFI_PASS: ${{ secrets.WIFI_PASS }}
+          MQTT_USER: ${{ secrets.MQTT_USER }}
+          MQTT_PASS: ${{ secrets.MQTT_PASS }}
+          ESP32_IP1: ${{ secrets.ESP32_IP1 }}
+        run: |
+          pio run --target upload --environment nodemcu-32s

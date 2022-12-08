@@ -31,7 +31,6 @@ extern float humedadSuelo;
 extern float temperature;
 extern int tiempoMuestras;
 extern int pesoMuestras;
-//---------------------------------
 
 extern uint8_t tempArray[20];
 extern uint8_t N_fil;
@@ -50,4 +49,3 @@ void pushData(uint8_t *tempArray, uint8_t newTemp, uint8_t N_fil);
 void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *topic, int min, int max);
 
 #endif
-

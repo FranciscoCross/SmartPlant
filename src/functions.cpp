@@ -26,10 +26,10 @@ int pesoMuestras = 1;
 
 uint8_t tempArray[20] = {0};
 uint8_t N_fil = 5;
-uint8_t current_temp = 0; // Temperatura actual s
+uint8_t current_temp = 0; // Temperatura actual
 uint8_t prom = 0;         // Promedio
 uint8_t humeArray[20] = {0};
-uint8_t current_hume = 0; // Temperatura actual s
+uint8_t current_hume = 0; // Humedad actual
 uint8_t promhume = 0;     // Promedio
 
 void start_ota_webserver(void)
@@ -50,7 +50,7 @@ void start_ota_webserver(void)
   Serial.println(WiFi.localIP());
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-  request->send(200, "text/plain", "Bienvenido a ESP32 over-the-air (OTA). Para actualizar el firmware de su ESP32 agregue /update en la dirección del navegador.");
+  request->send(200, "text/plain", "Bienvenido a ESP32 over-the-air (OTA). Para actualizar el firmware de su ESP32 agregue /update en la direccion del navegador.");
   });
   //Inicia ElegantOTA
   AsyncElegantOTA.begin(&server);    
@@ -154,7 +154,7 @@ void reconnect()
   while (!client.connected())
   {
     Serial.print("Intentando conexion MQTT... ");
-    if (client.connect("ESP32Client", mqtt_user, mqtt_pass))
+    if (client.connect("ESP32Client-fede", mqtt_user, mqtt_pass))
     {
       Serial.println("Conectado");
       client.subscribe("esp32/output1");

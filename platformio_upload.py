@@ -13,11 +13,13 @@
 
 import requests
 import hashlib
+import os
 Import('env')
 
 try:
     from requests_toolbelt import MultipartEncoder, MultipartEncoderMonitor
     from tqdm import tqdm
+    from os import getenv
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install requests_toolbelt")
     env.Execute("$PYTHONEXE -m pip install tqdm")
@@ -26,7 +28,10 @@ except ImportError:
 
 def on_upload(source, target, env):
     firmware_path = str(source[0])
-    upload_url = env.GetProjectOption('upload_url')
+#    upload_url = env.GetProjectOption('upload_url')
+    esp32_ip1 = str(os.getenv('ESP32_IP1'))
+    upload_url = "http://" + esp32_ip1 + "/update"
+    print("upload_url = " + upload_url)
 
     with open(firmware_path, 'rb') as firmware:
         md5 = hashlib.md5(firmware.read()).hexdigest()
