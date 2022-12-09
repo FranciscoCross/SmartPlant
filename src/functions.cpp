@@ -13,7 +13,8 @@ const char* mqtt_user = MQTT_USER;
 const char* mqtt_pass = MQTT_PASS;
 
 //Dirección IP del BROKER MQTT
-const char *mqtt_server = "terrariapancho.ddns.net";
+const char *mqtt_server = MQTT_SERV;
+const char *mqtt_client_id = ESP32_ID1;
 
 long lastMsg = 0;
 int value = 0;
@@ -154,7 +155,7 @@ void reconnect()
   while (!client.connected())
   {
     Serial.print("Intentando conexion MQTT... ");
-    if (client.connect("ESP32Client-fede", mqtt_user, mqtt_pass))
+    if (client.connect(mqtt_client_id, mqtt_user, mqtt_pass))
     {
       Serial.println("Conectado");
       client.subscribe("esp32/output1");

@@ -52,6 +52,8 @@ jobs:
           WIFI_PASS: ${{ secrets.WIFI_PASS }}
           MQTT_USER: ${{ secrets.MQTT_USER }}
           MQTT_PASS: ${{ secrets.MQTT_PASS }}
+          MQTT_SERV: ${{ secrets.MQTT_SERV }}
+          ESP32_ID1: ${{ secrets.ESP32_ID1 }}
           ESP32_IP1: ${{ secrets.ESP32_IP1 }}
         run: |
           pio run --target upload --environment nodemcu-32s
