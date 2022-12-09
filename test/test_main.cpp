@@ -1,6 +1,8 @@
 #include <unity.h>
-#include <Arduino.h>
-#include "param.h"
+
+#include "param.hpp"
+#include "functions.hpp"
+#include "functions.cpp"
 
 void setUp(void)
 {
@@ -23,10 +25,16 @@ void setup()
 {
   // NOTE!!! Wait for >2 secs
   // if board doesn't support software reset via Serial.DTR/RTS
-  delay(2000);
+  delay(3000);
 
+  Serial.begin(115200);
+  
+  start_ota_webserver();
+
+  Serial.println("Iniciando Tests...");
   UNITY_BEGIN();
   RUN_TEST(test_valid_blink_frequency);
+  Serial.println("Finalizando Tests...");
 }
 
 void loop()
