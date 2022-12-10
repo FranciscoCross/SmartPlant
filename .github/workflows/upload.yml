@@ -53,7 +53,7 @@ jobs:
 #          pio run
       - name: "unit tests"
         run: |
-          pio test -vv
+          pio test -vv --without-uploading
       - name: "upload to board"
         run: |
           pio run --target upload --environment nodemcu-32s
