@@ -44,7 +44,7 @@ jobs:
 #          pio run
       - name: "unit tests"
         run: |
-          pio test -vv --environment nodemcu-32s
+          pio test -vv
       - name: "upload to board"
         env:
           WIFI_SSID: ${{ secrets.WIFI_SSID }}
