@@ -42,10 +42,9 @@ jobs:
 #          MQTT_PASS: ${{ secrets.MQTT_PASS }}
 #        run: |
 #          pio run
-#pio test works for USB serial connection but not for OTA WIFI
-#      - name: "unit test"
-#        run: |
-#          pio test -vvv --environment nodemcu-32s
+      - name: "unit tests"
+        run: |
+          pio test -vv --environment nodemcu-32s
       - name: "upload to board"
         env:
           WIFI_SSID: ${{ secrets.WIFI_SSID }}
