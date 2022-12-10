@@ -23,6 +23,9 @@ Param.h: se configuran los parámetros del dispositivo
 #define TOPIC_HUME_AIRE "esp32/humidityy"
 #define TOPIC_TEMPERATURA "esp32/temperaturee"
 
+//Puerto del servidor MQTT
+#define MQTT_PORT 1883
+
 //PWM
 #define PWM_LED 16
 #define PWM_FREQ 5000
