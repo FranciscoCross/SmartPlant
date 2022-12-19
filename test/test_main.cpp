@@ -14,6 +14,12 @@ void tearDown(void)
   // clean stuff up here
 }
 
+void test_simple(void)
+{
+    // Simple test if 33 = 33 to check test_custom_runner.py
+    TEST_ASSERT_EQUAL(33, 33);
+}
+
 void test_valid_frequency(void)
 {
   Serial.println("Test: Checkeando Frecuencia dentro del rango válido");
@@ -39,6 +45,7 @@ void setup()
   // if board doesn't support software reset via Serial.DTR/RTS
   delay(2000);
 
+  pinMode(LED_ONBOARD, OUTPUT);
   Serial.begin(115200);
   
   start_ota_webserver();
@@ -47,8 +54,10 @@ void setup()
 
   Serial.println("Iniciando Tests...");
   UNITY_BEGIN();
-  RUN_TEST(test_valid_frequency);
-  RUN_TEST(test_mqtt_connection);
+  digitalWrite(LED_ONBOARD, HIGH);
+  RUN_TEST(test_simple);
+  //RUN_TEST(test_valid_frequency);
+  //RUN_TEST(test_mqtt_connection);
   Serial.println("Finalizando Tests...");
 }
 
