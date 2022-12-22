@@ -55,9 +55,9 @@ void setup()
   Serial.println("Iniciando Tests...");
   UNITY_BEGIN();
   digitalWrite(LED_ONBOARD, HIGH);
-  RUN_TEST(test_simple);
-  //RUN_TEST(test_valid_frequency);
-  //RUN_TEST(test_mqtt_connection);
+  //RUN_TEST(test_simple);
+  RUN_TEST(test_valid_frequency);
+  RUN_TEST(test_mqtt_connection);
   Serial.println("Finalizando Tests...");
 }
 
