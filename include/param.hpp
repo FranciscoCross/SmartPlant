@@ -18,10 +18,13 @@ Param.h: se configuran los parámetros del dispositivo
 #define ANALOG_2 35
 
 //Topicos MQTT
-#define TOPIC_LUZ "esp32/nivelLuz"
-#define TOPIC_HUME_SUELO "esp32/humedadSuelo"
-#define TOPIC_HUME_AIRE "esp32/humidity"
-#define TOPIC_TEMPERATURA "esp32/temperature"
+#define TOPIC_LUZ "esp32/nivelLuzz"
+#define TOPIC_HUME_SUELO "esp32/humedadSueloo"
+#define TOPIC_HUME_AIRE "esp32/humidityy"
+#define TOPIC_TEMPERATURA "esp32/temperaturee"
+
+//Puerto del servidor MQTT
+#define MQTT_PORT 1883
 
 //PWM
 #define PWM_LED 16
