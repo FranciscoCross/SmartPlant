@@ -38,7 +38,7 @@ void start_ota_webserver(void)
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
       Serial.println("");
-
+  Serial.println("Iniciando OTA Webserver...");
   // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
   delay(500);
