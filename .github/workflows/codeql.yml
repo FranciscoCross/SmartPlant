@@ -34,6 +34,9 @@ jobs:
       uses: github/codeql-action/init@v2
       with:
         languages: ${{ matrix.language }}
+    - name: Build with PlatformIO
+      run: |
+        pio run --environment nodemcu-32s
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
     #Add comment for test version of Python
