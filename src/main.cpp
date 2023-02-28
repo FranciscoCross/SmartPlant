@@ -28,6 +28,14 @@ void loop()
     reconnect();
   }
   client.loop(); 
+
+  //Vulnerabilidad insertada a propósito para probar CodeQL
+  uint8_t a;
+  uint16_t b = UINT8_MAX + 1;
+  while(a < b)
+  {
+    a++;
+  }
   
   long now = millis();
   if (now - lastMsg > DELAY * tiempoMuestras * pesoMuestras) //Bucle de tiempo
