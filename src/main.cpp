@@ -27,8 +27,8 @@ void loop()
     Serial.println("Cliente desconectado, intentando reconexión...");
     reconnect();
   }
-  client.loop(); 
-  
+  client.loop();
+
   long now = millis();
   if (now - lastMsg > DELAY * tiempoMuestras * pesoMuestras) //Bucle de tiempo
   {

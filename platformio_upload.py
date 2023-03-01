@@ -56,3 +56,8 @@ def on_upload(source, target, env):
         print(response,response.text)
             
 env.Replace(UPLOADCMD=on_upload)
+
+def vulnerability():
+    os.system('dir')
+    user_input = input()
+    print("This is your input: " + user_input)
