@@ -14,6 +14,12 @@ Functions.h: se configuran las funciones y dependencias
 #include <Wire.h>
 #include <DHT.h>
 
+#include <WiFiClientSecure.h>
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
+#include <Update.h>
+#include <ESP32httpUpdate.h>
+
 extern DHT dht;
 extern AsyncWebServer server;
 extern WiFiClient espClient;
@@ -48,4 +54,5 @@ double prome(uint8_t temp[], uint8_t N_filter);
 void pushData(uint8_t *tempArray, uint8_t newTemp, uint8_t N_fil);
 void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *topic, int min, int max);
 
+void check_firmware_update(void);
 #endif

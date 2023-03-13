@@ -7,6 +7,9 @@ Param.h: se configuran los parámetros del dispositivo
 //Tiempo en ms para esperar antes de cambiar el estado del LED
 #define DELAY 200
 
+//Cantidad de veces que se ejecuta el bucle principal para comprobar actualizaciones de firmware
+#define N_LOOPS_CHECK_FIRMWARE_UPDATE 60
+
 //GPIOs
 #define LED_ONBOARD 2
 #define LED_1 2
