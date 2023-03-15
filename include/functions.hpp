@@ -22,8 +22,8 @@ Functions.h: se configuran las funciones y dependencias
 
 extern DHT dht;
 extern AsyncWebServer server;
-extern WiFiClient espClient;
-extern PubSubClient client;
+extern WiFiClientSecure wifiSecureClient;
+extern PubSubClient pubSubClient;
 
 extern const char *mqtt_server;
 

@@ -3,8 +3,8 @@
 #include <AsyncElegantOTA.h>
 
 AsyncWebServer server(80);
-WiFiClient espClient;
-PubSubClient client(espClient);
+WiFiClientSecure wifiSecureClient;
+PubSubClient pubSubClient(wifiSecureClient);
 
 //Se toman las credenciales de las variables de entorno. Ver platformio.ini, sección build_flags
 const char* ssid = WIFI_SSID;
@@ -50,8 +50,6 @@ const char* SERVER_CERT_PEM = "-----BEGIN CERTIFICATE-----\n" \
 "2tIMPNuzjsmhDYAPexZ3FL//2wmUspO8IFgV6dtxQ/PeEMMA3KgqlbbC1j+Qa3bb\n" \
 "bP6MvPJwNQzcmRk13NfIRmPVNnGuV/u3gm3c\n" \
 "-----END CERTIFICATE-----";
-
-//static HttpsOTAStatus_t otastatus;
 
 long lastMsg = 0;
 int value = 0;
@@ -189,24 +187,24 @@ void changeState(String messageTemp, int pin)
 void reconnect()
 {
   // Bucle hasta que se reconecte
-  while (!client.connected())
+  while (!pubSubClient.connected())
   {
     Serial.print("Intentando conexion MQTT... ");
-    if (client.connect(mqtt_client_id, mqtt_user, mqtt_pass))
+    if (pubSubClient.connect(mqtt_client_id, mqtt_user, mqtt_pass))
     {
       Serial.println("Conectado");
-      client.subscribe("esp32/output1");
-      client.subscribe("esp32/output2");
-      client.subscribe("esp32/output3");
-      client.subscribe("esp32/output4");
-      client.subscribe("esp32/output5");
-      client.subscribe("esp32/output6");
-      client.subscribe("esp32/output7");
+      pubSubClient.subscribe("esp32/output1");
+      pubSubClient.subscribe("esp32/output2");
+      pubSubClient.subscribe("esp32/output3");
+      pubSubClient.subscribe("esp32/output4");
+      pubSubClient.subscribe("esp32/output5");
+      pubSubClient.subscribe("esp32/output6");
+      pubSubClient.subscribe("esp32/output7");
     }
     else
     {
       Serial.print("Fallo, rc=");
-      Serial.print(client.state());
+      Serial.print(pubSubClient.state());
       Serial.println(" Intentando de nuevo en 5 segundos...");
       delay(5000);
     }
@@ -252,7 +250,7 @@ void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *
   }
   prom = prome(datoArray, N_fil);
   dtostrf(prom, 1, 2, datoString);
-  client.publish(topic, datoString);
+  pubSubClient.publish(topic, datoString);
 }
 
 // downloads the JSON file with the latest firmware information
