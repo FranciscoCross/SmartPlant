@@ -3,7 +3,7 @@
 #include <AsyncElegantOTA.h>
 
 AsyncWebServer server(80);
-WiFiClientSecure wifiSecureClient;
+WiFiClient wifiSecureClient;
 PubSubClient pubSubClient(wifiSecureClient);
 
 //Se toman las credenciales de las variables de entorno. Ver platformio.ini, sección build_flags
@@ -15,41 +15,6 @@ const char* mqtt_pass = MQTT_PASS;
 //Dirección IP del BROKER MQTT
 const char *mqtt_server = MQTT_SERV;
 const char *mqtt_client_id = ESP32_ID1;
-
-//Constantes para actualizar si se lanza una nueva version de Firmware con autoupdate
-const float FIRMWARE_VERSION = 0.1;
-const char* UPDATE_JSON_URL = "https://power-pot.com/update.json";
-const char* SERVER_CERT_PEM = "-----BEGIN CERTIFICATE-----\n" \
-"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\n" \
-"bP6MvPJwNQzcmRk13NfIRmPVNnGuV/u3gm3c\n" \
-"-----END CERTIFICATE-----";
 
 long lastMsg = 0;
 int value = 0;
@@ -264,18 +229,22 @@ void check_firmware_update(void) {
   if (httpResponseCode == HTTP_CODE_OK) {
     String payload = http.getString();
     http.end();
+    //Serial.println("Payload: " + payload);
     
     // parse the json file
     DynamicJsonDocument doc(1024);
     DeserializationError error = deserializeJson(doc, payload);
     if (error) {
-      Serial.println("downloaded file is not a valid json, aborting...");
+      Serial.println("deserializeJson() error with code ");
+      Serial.println(error.f_str());
     } else {
       float new_version = doc["version"];
       if (new_version > FIRMWARE_VERSION) {
-        Serial.printf("current firmware version (%.1f) is lower than the available one (%.1f), upgrading...\n", FIRMWARE_VERSION, new_version);
+        Serial.printf("current firmware version (%.2f) is lower than the available online (%.2f), upgrading...\n", FIRMWARE_VERSION, new_version);
         const char* fileName = doc["file"];
+        Serial.printf("filename: %s", fileName);
         if (fileName != NULL) {
+          ESPhttpUpdate.rebootOnUpdate(false); // Manual reboot after Update
           t_httpUpdate_return ret = ESPhttpUpdate.update(fileName);
           switch(ret) {
             case HTTP_UPDATE_FAILED:
@@ -285,19 +254,20 @@ void check_firmware_update(void) {
               Serial.println("HTTP_UPDATE_NO_UPDATES");
               break;
             case HTTP_UPDATE_OK:
-              Serial.println("HTTP_UPDATE_OK, restarting");
+              Serial.println("HTTP_UPDATE_OK, restarting...");
+              delay(3000);
               ESP.restart();
               break;
           }
         } else {
-          Serial.println("unable to read the new file name, aborting...");
+          Serial.printf("unable to read the new file name, aborting... (current version: %.2f)", FIRMWARE_VERSION);
         }
       } else {
-        Serial.printf("current firmware version (%.1f) is greater or equal to the available one (%.1f), nothing to do...\n", FIRMWARE_VERSION, new_version);
+        Serial.printf("current firmware version (%.2f) is greater or equal to the available online (%.2f), nothing to do...\n", FIRMWARE_VERSION, new_version);
       }
     }
   } else {
-    Serial.println("unable to download the json file, aborting...");
+    Serial.printf("unable to download the json file, error: %d (current version: %.2f)\n",  httpResponseCode, FIRMWARE_VERSION);
   }
 
   //Clean up
