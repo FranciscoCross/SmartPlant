@@ -218,9 +218,9 @@ void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *
   pubSubClient.publish(topic, datoString);
 }
 
-// downloads the JSON file with the latest firmware information
+// Descarga un archivo JSON con informacion sobre las actualizaciones, y de ser necesario se descarga la ultima version de firmware
 void check_firmware_update(void) {
-  Serial.println("Looking for a new firmware...");
+  Serial.println("Buscando actualizaciones de Firmware...");
   
   HTTPClient http;
   http.begin(UPDATE_JSON_URL);
@@ -229,20 +229,19 @@ void check_firmware_update(void) {
   if (httpResponseCode == HTTP_CODE_OK) {
     String payload = http.getString();
     http.end();
-    //Serial.println("Payload: " + payload);
     
     // parse the json file
     DynamicJsonDocument doc(1024);
     DeserializationError error = deserializeJson(doc, payload);
     if (error) {
-      Serial.println("deserializeJson() error with code ");
+      Serial.println("deserializeJson() error code ");
       Serial.println(error.f_str());
     } else {
       float new_version = doc["version"];
       if (new_version > FIRMWARE_VERSION) {
-        Serial.printf("current firmware version (%.2f) is lower than the available online (%.2f), upgrading...\n", FIRMWARE_VERSION, new_version);
+        Serial.printf("La version de firmware actual (%.2f) es anterior a la version disponible online (%.2f), actualizando...\n", FIRMWARE_VERSION, new_version);
         const char* fileName = doc["file"];
-        Serial.printf("filename: %s", fileName);
+        Serial.printf("filename: %s\n", fileName);
         if (fileName != NULL) {
           ESPhttpUpdate.rebootOnUpdate(false); // Manual reboot after Update
           t_httpUpdate_return ret = ESPhttpUpdate.update(fileName);
@@ -255,19 +254,19 @@ void check_firmware_update(void) {
               break;
             case HTTP_UPDATE_OK:
               Serial.println("HTTP_UPDATE_OK, restarting...");
-              delay(3000);
+              delay(2000);
               ESP.restart();
               break;
           }
         } else {
-          Serial.printf("unable to read the new file name, aborting... (current version: %.2f)", FIRMWARE_VERSION);
+          Serial.printf("Error al leer el nombre de archivo del nuevo firmware, cancelando... (version actual: %.2f)", FIRMWARE_VERSION);
         }
       } else {
-        Serial.printf("current firmware version (%.2f) is greater or equal to the available online (%.2f), nothing to do...\n", FIRMWARE_VERSION, new_version);
+        Serial.printf("La version de firmware actual (%.2f) es mayor o igual a la version disponible online (%.2f), no se necesita actualizar...\n", FIRMWARE_VERSION, new_version);
       }
     }
   } else {
-    Serial.printf("unable to download the json file, error: %d (current version: %.2f)\n",  httpResponseCode, FIRMWARE_VERSION);
+    Serial.printf("Error al descargar el archivo JSON, error: %d (version actual: %.2f)\n",  httpResponseCode, FIRMWARE_VERSION);
   }
 
   //Clean up
