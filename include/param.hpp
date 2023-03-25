@@ -76,6 +76,6 @@ const char* SERVER_CERT_PEM = "-----BEGIN CERTIFICATE-----\n" \
 "-----END CERTIFICATE-----";
 */
 #define FIRMWARE_VERSION 0.34f
-#define UPDATE_JSON_URL "http://mqtt.power-pot.com:9191/update/update.json"
+#define UPDATE_JSON_URL "https://firmware.power-pot.com/update/update.json"
 
 #endif
