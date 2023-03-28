@@ -3,8 +3,9 @@
 #include <AsyncElegantOTA.h>
 
 AsyncWebServer server(80);
-WiFiClient wifiSecureClient;
-PubSubClient pubSubClient(wifiSecureClient);
+WiFiClient wifi;
+WiFiClientSecure wifiSecureClient;
+PubSubClient pubSubClient(wifi);
 
 //Se toman las credenciales de las variables de entorno. Ver platformio.ini, sección build_flags
 const char* ssid = WIFI_SSID;
@@ -223,7 +224,7 @@ void check_firmware_update(void) {
   Serial.println("Buscando actualizaciones de Firmware...");
   
   HTTPClient http;
-  http.begin(UPDATE_JSON_URL);
+  http.begin(wifiSecureClient, UPDATE_JSON_URL);
   
   int httpResponseCode = http.GET();
   if (httpResponseCode == HTTP_CODE_OK) {

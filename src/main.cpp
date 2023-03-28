@@ -4,7 +4,7 @@
 DHT dht(DHTPIN, DHTTYPE);
 
 //Certificado SSL - TODO: ponerlo mas prolijo
-/*const char* SERVER_CERT_PEM = "-----BEGIN CERTIFICATE-----\n" \
+const char* SERVER_CERTIFICATE = "-----BEGIN CERTIFICATE-----\n" \
 "MIIFVzCCAz+gAwIBAgINAgPlk28xsBNJiGuiFzANBgkqhkiG9w0BAQwFADBHMQsw\n" \
 "CQYDVQQGEwJVUzEiMCAGA1UEChMZR29vZ2xlIFRydXN0IFNlcnZpY2VzIExMQzEU\n" \
 "MBIGA1UEAxMLR1RTIFJvb3QgUjEwHhcNMTYwNjIyMDAwMDAwWhcNMzYwNjIyMDAw\n" \
@@ -35,7 +35,20 @@ DHT dht(DHTPIN, DHTTYPE);
 "2tIMPNuzjsmhDYAPexZ3FL//2wmUspO8IFgV6dtxQ/PeEMMA3KgqlbbC1j+Qa3bb\n" \
 "bP6MvPJwNQzcmRk13NfIRmPVNnGuV/u3gm3c\n" \
 "-----END CERTIFICATE-----";
-*/
+
+//BORRAR UNA VEZ QUE FUNCIONE
+void test_https()
+{
+  HTTPClient http;
+  http.begin(wifiSecureClient, UPDATE_JSON_URL);
+  int httpResponseCode = http.GET();
+  Serial.printf("GET %s\n", UPDATE_JSON_URL);
+  Serial.printf("httpResponseCode: %d\n", httpResponseCode);
+  if (httpResponseCode == HTTP_CODE_OK) {
+    String payload = http.getString();
+  }
+  http.end();
+}
 
 //-----------------Arduino-Setup-y-Loop-------------------------//
 void setup(void) {
@@ -46,7 +59,8 @@ void setup(void) {
   Serial.begin(115200);
 
   start_ota_webserver();
-  //wifiSecureClient.setCACert(SERVER_CERT_PEM);
+  wifiSecureClient.setCACert(SERVER_CERTIFICATE);
+  //wifiSecureClient.setInsecure();
   pubSubClient.setServer(mqtt_server, MQTT_PORT);
   pubSubClient.setCallback(callback);
 
