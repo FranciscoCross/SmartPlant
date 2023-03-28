@@ -231,7 +231,7 @@ void check_firmware_update(void) {
     String payload = http.getString();
     http.end();
     
-    // parse the json file
+    // Parsear el JSON
     DynamicJsonDocument doc(1024);
     DeserializationError error = deserializeJson(doc, payload);
     if (error) {
@@ -241,11 +241,13 @@ void check_firmware_update(void) {
       float new_version = doc["version"];
       if (new_version > FIRMWARE_VERSION) {
         Serial.printf("La version de firmware actual (%.2f) es anterior a la version disponible online (%.2f), actualizando...\n", FIRMWARE_VERSION, new_version);
-        const char* fileName = doc["file"];
-        Serial.printf("filename: %s\n", fileName);
-        if (fileName != NULL) {
-          ESPhttpUpdate.rebootOnUpdate(false); // Manual reboot after Update
-          t_httpUpdate_return ret = ESPhttpUpdate.update(fileName);
+        //const char* fileName = doc["file"];
+        String file_url = String(doc["base_url"].as<String>()) + String(doc["version"].as<String>()) + String(doc["file_extension"].as<String>());
+        Serial.printf("filename: ");
+        Serial.println(file_url);
+        if (file_url != NULL) {
+          ESPhttpUpdate.rebootOnUpdate(false); // Reboot manual con ESP.restart()
+          t_httpUpdate_return ret = ESPhttpUpdate.update(file_url);
           switch(ret) {
             case HTTP_UPDATE_FAILED:
               Serial.printf("HTTP_UPDATE_FAILED Error (%d): %s\n", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
@@ -269,7 +271,5 @@ void check_firmware_update(void) {
   } else {
     Serial.printf("Error al descargar el archivo JSON, error: %d (version actual: %.2f)\n",  httpResponseCode, FIRMWARE_VERSION);
   }
-
-  //Clean up
-    http.end();
+  http.end();
 }
