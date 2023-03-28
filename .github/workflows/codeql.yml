@@ -39,6 +39,7 @@ jobs:
       name: Build with PlatformIO
       run: |
         python3 -c "$(curl -fsSL https://raw.githubusercontent.com/platformio/platformio/master/scripts/get-platformio.py)"
+        export PATH:$PATH:/home/runner/.platformio/penv/bin
         pio run --environment nodemcu-32s
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
