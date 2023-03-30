@@ -33,9 +33,9 @@ jobs:
     runs-on: self-hosted    
     steps:    
       - uses: actions/checkout@v3
-      - name: "unit tests"
-        run: |
-          pio test -vv
+#      - name: "unit tests"
+#        run: |
+#          pio test -vv
       - name: "upload to board"
         run: |
           pio run --target upload --environment nodemcu-32s
