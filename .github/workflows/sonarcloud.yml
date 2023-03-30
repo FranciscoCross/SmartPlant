@@ -5,7 +5,7 @@ on:
   pull_request:
     branches: [ "devv" ]
 
-name: Main Workflow
+name: Sonarcloud
 jobs:
   sonarcloud:
     runs-on: ubuntu-latest
