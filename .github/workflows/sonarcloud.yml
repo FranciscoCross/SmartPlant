@@ -1,11 +1,9 @@
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "dev" ]
-    paths:
-      - 'clientBroker/*'
+    branches: [ "devv" ]
   pull_request:
-    branches: [ "dev" ]
+    branches: [ "devv" ]
 
 name: Main Workflow
 jobs:
