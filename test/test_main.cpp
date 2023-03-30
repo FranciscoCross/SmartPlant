@@ -30,13 +30,13 @@ void test_valid_frequency(void)
 
 void test_mqtt_connection(void)
 {
-  if (!client.connected())
+  if (!pubSubClient.connected())
   {
     Serial.println("Test: Conexión al servidor MQTT");
     reconnect();
   }
-  client.loop(); 
-  TEST_ASSERT_EQUAL(true, client.connected());
+  pubSubClient.loop(); 
+  TEST_ASSERT_EQUAL(true, pubSubClient.connected());
 }
 
 void setup()
@@ -49,8 +49,8 @@ void setup()
   Serial.begin(115200);
   
   start_ota_webserver();
-  client.setServer(mqtt_server, MQTT_PORT);
-  client.setCallback(callback);
+  pubSubClient.setServer(mqtt_server, MQTT_PORT);
+  pubSubClient.setCallback(callback);
 
   Serial.println("Iniciando Tests...");
   UNITY_BEGIN();

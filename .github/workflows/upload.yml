@@ -39,3 +39,5 @@ jobs:
       - name: "upload to board"
         run: |
           pio run --target upload --environment nodemcu-32s
+          cp .pio/build/nodemcu-32s/firmware.bin /home/runner/firmware/firmware.bin
+          echo "Firmware.bin compilado y copiado a /home/runner/firmware"

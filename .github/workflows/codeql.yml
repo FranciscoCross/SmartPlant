@@ -3,7 +3,7 @@ name: CodeQL
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   pull_request:
-    branches: [ "main" ]
+    branches: [ "dev" ]
     paths:
       - 'src/*'
       - 'include/*'
@@ -15,7 +15,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     permissions:
       actions: read
       contents: read
@@ -38,6 +38,7 @@ jobs:
     - if: matrix.language == 'cpp'
       name: Build with PlatformIO
       run: |
-        pio run --environment nodemcu-32s
+        python3 -c "$(curl -fsSL https://raw.githubusercontent.com/platformio/platformio/master/scripts/get-platformio.py)"
+        /home/runner/.platformio/penv/bin/platformio run --environment nodemcu-32s
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2

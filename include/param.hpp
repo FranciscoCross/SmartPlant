@@ -7,6 +7,9 @@ Param.h: se configuran los parámetros del dispositivo
 //Tiempo en ms para esperar antes de cambiar el estado del LED
 #define DELAY 200
 
+//Cantidad de veces que se ejecuta el bucle principal para comprobar actualizaciones de firmware
+#define N_LOOPS_CHECK_FIRMWARE_UPDATE 60
+
 //GPIOs
 #define LED_ONBOARD 2
 #define LED_1 2
@@ -36,6 +39,8 @@ Param.h: se configuran los parámetros del dispositivo
 #define DHTPIN 22
 #define DHTTYPE DHT11
 
-#endif
+//Actualizaciones de Firmware con autoupdate
+#define FIRMWARE_VERSION 0.38f
+#define UPDATE_JSON_URL "https://firmware.power-pot.com/update/update.json"
 
-//testing workflow 2
+#endif
