@@ -3,6 +3,9 @@
 
 DHT dht(DHTPIN, DHTTYPE);
 
+//Version del Firmware
+float FIRMWARE_VERSION = 0.38f;
+
 //Certificado SSL - TODO: ponerlo mas prolijo
 const char* SERVER_CERTIFICATE = "-----BEGIN CERTIFICATE-----\n" \
 "MIIFVzCCAz+gAwIBAgINAgPlk28xsBNJiGuiFzANBgkqhkiG9w0BAQwFADBHMQsw\n" \
