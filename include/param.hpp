@@ -40,7 +40,7 @@ Param.h: se configuran los parámetros del dispositivo
 #define DHTTYPE DHT11
 
 //Version del Firmware
-extern float FIRMWARE_VERSION;
+#define FIRMWARE_VERSION 0.39f
 
 //Actualizaciones de Firmware con autoupdate
 #define UPDATE_JSON_URL "https://firmware.power-pot.com/update/update.json"
