@@ -32,7 +32,7 @@ jobs:
           pio test -vv
       - name: "Set version number"
         run: echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
-        echo "VERSION=$VERSION"
+          echo "VERSION=$VERSION"
       - name: "upload to board"
         run: |
           pio run --target upload --environment nodemcu-32s
