@@ -33,6 +33,8 @@ jobs:
       - name: "Set firmware version"
         run: |
           pwd
+          sudo apt install mawk -y
+          awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp
           export VERSION=$(awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp)
           echo "VERSION=${{ env.VERSION }}"
       - name: "build firmware"
