@@ -30,10 +30,12 @@ jobs:
       - name: "unit tests"
         run: |
           pio test -vv
-        shell: bash
-      - name: "build and copy firmware to update server"
+      - name: "Set firmware version"
+        run: |
+          export VERSION=$(awk '/#define FIRMWARE_VERSION/ {print $NF}' include/param.hpp)
+          echo "VERSION=${{ env.VERSION }}"
+      - name: "build firmware"
         run: |
           pio run --target upload --environment nodemcu-32s
-          echo "VERSION=${VERSION}"
-          cp .pio/build/nodemcu-32s/firmware.bin /home/runner/firmware/update/firmware-${VERSION}.bin
+          cp .pio/build/nodemcu-32s/firmware.bin /home/runner/firmware/update/firmware-${{ env.VERSION }}.bin
           echo "Firmware.bin compilado y copiado a /home/runner/firmware/update"

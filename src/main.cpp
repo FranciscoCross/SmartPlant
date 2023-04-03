@@ -64,7 +64,9 @@ void setup(void) {
   pubSubClient.setServer(mqtt_server, MQTT_PORT);
   pubSubClient.setCallback(callback);
 
-  Serial.printf("\nBienvenido a Power Pot version: %.2f\n", FIRMWARE_VERSION);
+  //const float VERSION = FIRMWARE_VERSION;
+  Serial.printf("\nBienvenido a Power Pot\n");
+  Serial.printf("VERSION = %.2f\n", FIRMWARE_VERSION);
 
   ledcSetup(PWM_LED_CHANNEL, PWM_FREQ, PWM_RESOLUTION);
   ledcAttachPin(PWM_LED, PWM_LED_CHANNEL);
