@@ -36,20 +36,6 @@ const char* SERVER_CERTIFICATE = "-----BEGIN CERTIFICATE-----\n" \
 "bP6MvPJwNQzcmRk13NfIRmPVNnGuV/u3gm3c\n" \
 "-----END CERTIFICATE-----";
 
-//BORRAR UNA VEZ QUE FUNCIONE
-void test_https()
-{
-  HTTPClient http;
-  http.begin(wifiSecureClient, UPDATE_JSON_URL);
-  int httpResponseCode = http.GET();
-  Serial.printf("GET %s\n", UPDATE_JSON_URL);
-  Serial.printf("httpResponseCode: %d\n", httpResponseCode);
-  if (httpResponseCode == HTTP_CODE_OK) {
-    String payload = http.getString();
-  }
-  http.end();
-}
-
 //-----------------Arduino-Setup-y-Loop-------------------------//
 void setup(void) {
   pinMode(LED_ONBOARD, OUTPUT);
@@ -64,7 +50,6 @@ void setup(void) {
   pubSubClient.setServer(mqtt_server, MQTT_PORT);
   pubSubClient.setCallback(callback);
 
-  //const float VERSION = FIRMWARE_VERSION;
   Serial.printf("\nBienvenido a Power Pot\n");
   Serial.printf("VERSION = %.2f\n", FIRMWARE_VERSION);
 
