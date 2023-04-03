@@ -20,6 +20,7 @@ env:
   MQTT_SERV: ${{ secrets.MQTT_SERV }}
   ESP32_ID1: ${{ secrets.ESP32_ID1 }}
   ESP32_IP1: ${{ secrets.ESP32_IP1 }}
+  VERSION: $(awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp)
 
 jobs:
   build:
@@ -32,10 +33,8 @@ jobs:
           pio test -vv
       - name: "Set firmware version"
         run: |
-          pwd
-          sudo apt install mawk -y
-          awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp
-          export VERSION=$(awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp)
+#awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp
+#          export VERSION=$(awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp)
           echo "VERSION=${{ env.VERSION }}"
       - name: "build firmware"
         run: |
