@@ -7,13 +7,13 @@ WiFiClient wifi;
 WiFiClientSecure wifiSecureClient;
 PubSubClient pubSubClient(wifi);
 
-//Se toman las credenciales de las variables de entorno. Ver platformio.ini, sección build_flags
-const char* ssid = WIFI_SSID;
-const char* password = WIFI_PASS;
-const char* mqtt_user = MQTT_USER;
-const char* mqtt_pass = MQTT_PASS;
+// Se toman las credenciales de las variables de entorno. Ver platformio.ini, sección build_flags
+const char *ssid = WIFI_SSID;
+const char *password = WIFI_PASS;
+const char *mqtt_user = MQTT_USER;
+const char *mqtt_pass = MQTT_PASS;
 
-//Dirección IP del BROKER MQTT
+// Dirección IP del BROKER MQTT
 const char *mqtt_server = MQTT_SERV;
 const char *mqtt_client_id = ESP32_ID1;
 
@@ -38,12 +38,13 @@ void start_ota_webserver(void)
 {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
-      Serial.println("");
+  Serial.println("");
   Serial.println("Iniciando OTA Webserver...");
   // Wait for connection
-  while (WiFi.status() != WL_CONNECTED) {
-  delay(500);
-  Serial.print(".");
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
   }
   Serial.println("");
   Serial.print("Conectado a: ");
@@ -51,11 +52,10 @@ void start_ota_webserver(void)
   Serial.print("Dirección IP: ");
   Serial.println(WiFi.localIP());
 
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-  request->send(200, "text/plain", "Bienvenido a ESP32 over-the-air (OTA). Para actualizar el firmware de su ESP32 agregue /update en la direccion del navegador.");
-  });
-  //Inicia ElegantOTA
-  AsyncElegantOTA.begin(&server);    
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(200, "text/plain", "Bienvenido a ESP32 over-the-air (OTA). Para actualizar el firmware de su ESP32 agregue /update en la direccion del navegador."); });
+  // Inicia ElegantOTA
+  AsyncElegantOTA.begin(&server);
   server.begin();
   Serial.println("HTTP server listo");
 }
@@ -220,56 +220,70 @@ void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *
 }
 
 // Descarga un archivo JSON con informacion sobre las actualizaciones, y de ser necesario se descarga la ultima version de firmware
-void check_firmware_update(void) {
+void check_firmware_update(void)
+{
   Serial.println("Buscando actualizaciones de Firmware...");
-  
+
   HTTPClient http;
   http.begin(wifiSecureClient, UPDATE_JSON_URL);
-  
+
   int httpResponseCode = http.GET();
-  if (httpResponseCode == HTTP_CODE_OK) {
+  if (httpResponseCode == HTTP_CODE_OK)
+  {
     String payload = http.getString();
     http.end();
-    
+
     // Parsear el JSON
     DynamicJsonDocument doc(1024);
     DeserializationError error = deserializeJson(doc, payload);
-    if (error) {
+    if (error)
+    {
       Serial.println("deserializeJson() error code ");
       Serial.println(error.f_str());
-    } else {
+    }
+    else
+    {
       float new_version = doc["version"];
-      if (new_version > FIRMWARE_VERSION) {
+      if (new_version > FIRMWARE_VERSION)
+      {
         Serial.printf("La version de firmware actual (%.2f) es anterior a la version disponible online (%.2f), actualizando...\n", FIRMWARE_VERSION, new_version);
-        //const char* fileName = doc["file"];
+        // const char* fileName = doc["file"];
         String file_url = String(doc["base_url"].as<String>()) + String(doc["version"].as<String>()) + String(doc["file_extension"].as<String>());
         Serial.printf("filename: ");
         Serial.println(file_url);
-        if (file_url != NULL) {
+        if (file_url != NULL)
+        {
           ESPhttpUpdate.rebootOnUpdate(false); // Reboot manual con ESP.restart()
           t_httpUpdate_return ret = ESPhttpUpdate.update(file_url);
-          switch(ret) {
-            case HTTP_UPDATE_FAILED:
-              Serial.printf("HTTP_UPDATE_FAILED Error (%d): %s\n", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
-              break;
-            case HTTP_UPDATE_NO_UPDATES:
-              Serial.println("HTTP_UPDATE_NO_UPDATES");
-              break;
-            case HTTP_UPDATE_OK:
-              Serial.println("HTTP_UPDATE_OK, restarting...");
-              delay(2000);
-              ESP.restart();
-              break;
+          switch (ret)
+          {
+          case HTTP_UPDATE_FAILED:
+            Serial.printf("HTTP_UPDATE_FAILED Error (%d): %s\n", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
+            break;
+          case HTTP_UPDATE_NO_UPDATES:
+            Serial.println("HTTP_UPDATE_NO_UPDATES");
+            break;
+          case HTTP_UPDATE_OK:
+            Serial.println("HTTP_UPDATE_OK, restarting...");
+            delay(2000);
+            ESP.restart();
+            break;
           }
-        } else {
+        }
+        else
+        {
           Serial.printf("Error al leer el nombre de archivo del nuevo firmware, cancelando... (version actual: %.2f)", FIRMWARE_VERSION);
         }
-      } else {
+      }
+      else
+      {
         Serial.printf("La version de firmware actual (%.2f) es mayor o igual a la version disponible online (%.2f), no se necesita actualizar...\n", FIRMWARE_VERSION, new_version);
       }
     }
-  } else {
-    Serial.printf("Error al descargar el archivo JSON, error: %d (version actual: %.2f)\n",  httpResponseCode, FIRMWARE_VERSION);
+  }
+  else
+  {
+    Serial.printf("Error al descargar el archivo JSON, error: %d (version actual: %.2f)\n", httpResponseCode, FIRMWARE_VERSION);
   }
   http.end();
 }
