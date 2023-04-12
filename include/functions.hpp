@@ -9,7 +9,7 @@ Functions.h: se configuran las funciones y dependencias
 #include <stdint.h>
 #include <WiFi.h>
 #include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
+//#include <ESPAsyncWebServer.h>
 #include <PubSubClient.h>
 #include <Wire.h>
 #include <DHT.h>
@@ -19,10 +19,10 @@ Functions.h: se configuran las funciones y dependencias
 #include <ArduinoJson.h>
 #include <Update.h>
 #include <ESP32httpUpdate.h>
-//#include <WiFiManager.h>
+#include <WiFiManager.h>
 
 extern DHT dht;
-extern AsyncWebServer server;
+//extern AsyncWebServer server;
 extern WiFiClientSecure wifiSecureClient;
 extern PubSubClient pubSubClient;
 
@@ -48,7 +48,7 @@ extern uint8_t current_hume; // Temperatura actual s
 extern uint8_t promhume;     // Promedio
 
 void wifi_config(void);
-void start_ota_webserver(void);
+//void start_ota_webserver(void);
 void callback(char *topic, byte *message, unsigned int length);
 void reconnect();
 void changeState(String messageTemp, int pin);

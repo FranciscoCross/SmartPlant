@@ -1,8 +1,8 @@
 #include "functions.hpp"
 #include "param.hpp"
-#include <AsyncElegantOTA.h>
+//#include <AsyncElegantOTA.h>
 
-AsyncWebServer server(80);
+//AsyncWebServer server(80);
 WiFiClient wifi;
 WiFiClientSecure wifiSecureClient;
 PubSubClient pubSubClient(wifi);
@@ -53,7 +53,7 @@ void wifi_config(void)
   Serial.println(WiFi.localIP());
 }
 
-void start_ota_webserver(void)
+/*void start_ota_webserver(void)
 {
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(200, "text/plain", "Bienvenido a ESP32 over-the-air (OTA). Para actualizar el firmware de su ESP32 agregue /update en la direccion del navegador."); });
@@ -61,7 +61,7 @@ void start_ota_webserver(void)
   AsyncElegantOTA.begin(&server);
   server.begin();
   Serial.println("OTA Webserver server listo");
-}
+}*/
 
 void callback(char *topic, byte *message, unsigned int length)
 {
