@@ -45,6 +45,7 @@ void setup(void)
   pinMode(LED_3, OUTPUT);
   Serial.begin(115200);
 
+  wifi_config();
   start_ota_webserver();
   wifiSecureClient.setCACert(SERVER_CERTIFICATE);
   // wifiSecureClient.setInsecure();

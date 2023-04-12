@@ -34,13 +34,13 @@ uint8_t humeArray[20] = {0};
 uint8_t current_hume = 0; // Humedad actual
 uint8_t promhume = 0;     // Promedio
 
-void start_ota_webserver(void)
+void wifi_config(void)
 {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   Serial.println("");
-  Serial.println("Iniciando OTA Webserver...");
-  // Wait for connection
+  Serial.println("Conectando a la red WiFi...");
+  // Se imprimen puntos mientras se espera la conexion
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
@@ -51,13 +51,16 @@ void start_ota_webserver(void)
   Serial.println(ssid);
   Serial.print("Dirección IP: ");
   Serial.println(WiFi.localIP());
+}
 
+void start_ota_webserver(void)
+{
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(200, "text/plain", "Bienvenido a ESP32 over-the-air (OTA). Para actualizar el firmware de su ESP32 agregue /update en la direccion del navegador."); });
   // Inicia ElegantOTA
   AsyncElegantOTA.begin(&server);
   server.begin();
-  Serial.println("HTTP server listo");
+  Serial.println("OTA Webserver server listo");
 }
 
 void callback(char *topic, byte *message, unsigned int length)

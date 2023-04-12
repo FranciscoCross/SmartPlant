@@ -19,6 +19,7 @@ Functions.h: se configuran las funciones y dependencias
 #include <ArduinoJson.h>
 #include <Update.h>
 #include <ESP32httpUpdate.h>
+//#include <WiFiManager.h>
 
 extern DHT dht;
 extern AsyncWebServer server;
@@ -46,6 +47,7 @@ extern uint8_t humeArray[20];
 extern uint8_t current_hume; // Temperatura actual s
 extern uint8_t promhume;     // Promedio
 
+void wifi_config(void);
 void start_ota_webserver(void);
 void callback(char *topic, byte *message, unsigned int length);
 void reconnect();
