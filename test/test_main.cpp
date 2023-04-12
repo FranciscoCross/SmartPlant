@@ -48,7 +48,8 @@ void setup()
   pinMode(LED_ONBOARD, OUTPUT);
   Serial.begin(115200);
   
-  start_ota_webserver();
+  wifi_config();
+  //start_ota_webserver();
   pubSubClient.setServer(mqtt_server, MQTT_PORT);
   pubSubClient.setCallback(callback);
 
