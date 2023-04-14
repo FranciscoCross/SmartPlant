@@ -25,6 +25,10 @@ extern DHT dht;
 //extern AsyncWebServer server;
 extern WiFiClientSecure wifiSecureClient;
 extern PubSubClient pubSubClient;
+extern WiFiManager wm;
+
+extern char *mqtt_user;
+extern char *mqtt_pass;
 
 extern const char *mqtt_server;
 

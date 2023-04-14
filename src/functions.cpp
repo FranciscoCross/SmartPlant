@@ -1,17 +1,24 @@
 #include "functions.hpp"
 #include "param.hpp"
-//#include <AsyncElegantOTA.h>
+// #include <AsyncElegantOTA.h>
 
-//AsyncWebServer server(80);
+// AsyncWebServer server(80);
 WiFiClient wifi;
 WiFiClientSecure wifiSecureClient;
 PubSubClient pubSubClient(wifi);
+WiFiManager wm;
 
 // Se toman las credenciales de las variables de entorno. Ver platformio.ini, sección build_flags
+/*
 const char *ssid = WIFI_SSID;
 const char *password = WIFI_PASS;
 const char *mqtt_user = MQTT_USER;
 const char *mqtt_pass = MQTT_PASS;
+*/
+
+// Credenciales MQTT, se setean con WiFiManager en la funcion wifi_config()
+char *mqtt_user = nullptr;
+char *mqtt_pass = nullptr;
 
 // Dirección IP del BROKER MQTT
 const char *mqtt_server = MQTT_SERV;
@@ -37,7 +44,42 @@ uint8_t promhume = 0;     // Promedio
 void wifi_config(void)
 {
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid, password);
+
+  // Remove any previous network settings
+  wm.resetSettings();
+
+  // Supress Debug information
+  // wm.setDebugOutput(false);
+
+  // Automatically connect using saved credentials,
+  // if connection fails, it starts an access point with the specified name ( "AutoConnectAP"),
+  // if empty will auto generate SSID, if password is blank it will be anonymous AP (wm.autoConnect())
+  // then goes into a blocking loop awaiting configuration and will return success result
+
+  // Define a text box, 50 characters maximum
+  WiFiManagerParameter text_mqtt_user("text_mqtt_user", "MQTT User", "", 50);
+  WiFiManagerParameter text_mqtt_pass("text_mqtt_pass", "MQTT Password", "", 50);
+
+  wm.addParameter(&text_mqtt_user);
+  wm.addParameter(&text_mqtt_pass);
+
+  bool res;
+  // res = wm.autoConnect(); // auto generated AP name from chipid
+  // res = wm.autoConnect("AutoConnectAP"); // anonymous ap
+  res = wm.autoConnect("PowerPotConfigAP", "password"); // password protected ap
+
+  if (!res)
+  {
+    Serial.println("Error en WiFiManager, no se pudo conectar.");
+    // ESP.restart();
+  }
+  else
+  {
+    // if you get here you have connected to the WiFi
+    Serial.println("Conectado exitosamente con WiFiManager");
+  }
+
+  /*WiFi.begin(ssid, password);
   Serial.println("");
   Serial.println("Conectando a la red WiFi...");
   // Se imprimen puntos mientras se espera la conexion
@@ -45,12 +87,23 @@ void wifi_config(void)
   {
     delay(500);
     Serial.print(".");
-  }
+  }*/
+
+  // Se setean las variables globales de las credenciales MQTT
+  mqtt_user = (char *)malloc(sizeof(char) * text_mqtt_user.getValueLength());
+  mqtt_pass = (char *)malloc(sizeof(char) * text_mqtt_pass.getValueLength());
+  strcpy(mqtt_user, text_mqtt_user.getValue());
+  strcpy(mqtt_pass, text_mqtt_pass.getValue());
+
   Serial.println("");
-  Serial.print("Conectado a: ");
-  Serial.println(ssid);
+  Serial.print("Conectado a la red: ");
+  Serial.println(WiFi.SSID());
   Serial.print("Dirección IP: ");
   Serial.println(WiFi.localIP());
+  Serial.print("Usuario MQTT: ");
+  Serial.println(mqtt_user);
+  Serial.print("Contra MQTT: ");
+  Serial.println(mqtt_pass);
 }
 
 /*void start_ota_webserver(void)
@@ -161,7 +214,7 @@ void reconnect()
     Serial.print("Intentando conexion MQTT... ");
     if (pubSubClient.connect(mqtt_client_id, mqtt_user, mqtt_pass))
     {
-      Serial.println("Conectado");
+      Serial.println("Conectado a MQTT");
       pubSubClient.subscribe("esp32/output1");
       pubSubClient.subscribe("esp32/output2");
       pubSubClient.subscribe("esp32/output3");
@@ -169,11 +222,18 @@ void reconnect()
       pubSubClient.subscribe("esp32/output5");
       pubSubClient.subscribe("esp32/output6");
       pubSubClient.subscribe("esp32/output7");
+
+      // Liberamos la memoria de los apuntadores alocados
+      free(mqtt_user);
+      free(mqtt_pass);
+      mqtt_user = nullptr;
+      mqtt_pass = nullptr;
     }
     else
     {
       Serial.print("Fallo, rc=");
       Serial.print(pubSubClient.state());
+      Serial.printf("// mqtt_user: %s // mqtt_pass: %s //", mqtt_user, mqtt_pass);
       Serial.println(" Intentando de nuevo en 5 segundos...");
       delay(5000);
     }
