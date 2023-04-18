@@ -17,8 +17,8 @@ const char *mqtt_pass = MQTT_PASS;
 */
 
 // Credenciales MQTT, se setean con WiFiManager en la funcion wifi_config()
-char *mqtt_user = nullptr;
-char *mqtt_pass = nullptr;
+char mqtt_user[MAX_CREDENTIALS_LEN];
+char mqtt_pass[MAX_CREDENTIALS_LEN];
 
 // Dirección IP del BROKER MQTT
 const char *mqtt_server = MQTT_SERV;
@@ -41,28 +41,93 @@ uint8_t humeArray[20] = {0};
 uint8_t current_hume = 0; // Humedad actual
 uint8_t promhume = 0;     // Promedio
 
-void wifi_config(void)
+bool shouldSaveConfig = false;
+
+void wifiConfig(void)
 {
-  WiFi.mode(WIFI_STA);
+  // Forzar configuracion de WiFiManager, normalmente false excepto para testing
+  bool forceConfig = false;
 
-  // Remove any previous network settings
-  wm.resetSettings();
+  // Formatear SPIFFS para testing
+  //SPIFFS.format();
 
-  // Supress Debug information
-  // wm.setDebugOutput(false);
+  // Eliminar la configuracion guardada de WiFiManager
+  //wm.resetSettings();
+
+  // Debug info
+  wm.setDebugOutput(true);
+ 
+  bool spiffsSetup = loadConfigFile();
+
+  // Si no se cargo la configuracion
+  if (!spiffsSetup)
+  {
+    Serial.println(F("Forcing config mode as there is no saved config"));
+    forceConfig = true;
+  }
+
+  WiFi.mode(WIFI_STA);  
+
+  // Set config save notify callback
+  wm.setSaveConfigCallback(saveConfigCallback);
+ 
+  // Set callback that gets called when connecting to previous WiFi fails, and enters Access Point mode
+  wm.setAPCallback(configModeCallback);
 
   // Automatically connect using saved credentials,
   // if connection fails, it starts an access point with the specified name ( "AutoConnectAP"),
   // if empty will auto generate SSID, if password is blank it will be anonymous AP (wm.autoConnect())
   // then goes into a blocking loop awaiting configuration and will return success result
 
-  // Define a text box, 50 characters maximum
-  WiFiManagerParameter text_mqtt_user("text_mqtt_user", "MQTT User", "", 50);
-  WiFiManagerParameter text_mqtt_pass("text_mqtt_pass", "MQTT Password", "", 50);
+  // Se definen los parametros a configurar en WifiManager
+  WiFiManagerParameter text_mqtt_user("text_mqtt_user", "MQTT User", "", MAX_CREDENTIALS_LEN);
+  WiFiManagerParameter text_mqtt_pass("text_mqtt_pass", "MQTT Password", "", MAX_CREDENTIALS_LEN);
 
   wm.addParameter(&text_mqtt_user);
   wm.addParameter(&text_mqtt_pass);
 
+  if (forceConfig)
+    // Run if we need a configuration
+  {
+    if (!wm.startConfigPortal("PowerPotConfigAP", "password"))  //TODO: Cambiar password por env var
+    {
+      Serial.println("failed to connect and hit timeout");
+      delay(3000);
+      //reset and try again, or maybe put it to deep sleep
+      ESP.restart();
+      delay(5000);
+    }
+    else
+    {
+      Serial.println("WiFiManager startConfigPortal Exitoso (forceConfig = true)");
+    }
+  }
+  else
+  {
+    if (!wm.autoConnect("PowerPotConfigAP", "password"))
+    {
+      Serial.println("failed to connect and hit timeout");
+      delay(3000);
+      // if we still have not connected restart and try all over again
+      ESP.restart();
+      delay(5000);
+    }
+    else
+    {
+      Serial.println("WiFiManager AutoConnect Exitoso");
+    }
+  }
+
+  // Las credenciales MQTT solo deben sobreescribirse si se configuraron, pero si se obtubieron de SPIFFS no deben sobreescribirse
+  
+  // Si no se cargo la configuracion
+  if(!spiffsSetup)
+  {
+    strcpy(mqtt_user, text_mqtt_user.getValue());
+    strcpy(mqtt_pass, text_mqtt_pass.getValue());
+  }
+
+  /*
   bool res;
   // res = wm.autoConnect(); // auto generated AP name from chipid
   // res = wm.autoConnect("AutoConnectAP"); // anonymous ap
@@ -77,23 +142,13 @@ void wifi_config(void)
   {
     // if you get here you have connected to the WiFi
     Serial.println("Conectado exitosamente con WiFiManager");
-  }
-
-  /*WiFi.begin(ssid, password);
-  Serial.println("");
-  Serial.println("Conectando a la red WiFi...");
-  // Se imprimen puntos mientras se espera la conexion
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
   }*/
 
   // Se setean las variables globales de las credenciales MQTT
-  mqtt_user = (char *)malloc(sizeof(char) * text_mqtt_user.getValueLength());
-  mqtt_pass = (char *)malloc(sizeof(char) * text_mqtt_pass.getValueLength());
-  strcpy(mqtt_user, text_mqtt_user.getValue());
-  strcpy(mqtt_pass, text_mqtt_pass.getValue());
+  //mqtt_user = (char *)malloc(sizeof(char) * text_mqtt_user.getValueLength());
+  //mqtt_pass = (char *)malloc(sizeof(char) * text_mqtt_pass.getValueLength());
+  //strcpy(mqtt_user, text_mqtt_user.getValue());
+  //strcpy(mqtt_pass, text_mqtt_pass.getValue());
 
   Serial.println("");
   Serial.print("Conectado a la red: ");
@@ -104,6 +159,12 @@ void wifi_config(void)
   Serial.println(mqtt_user);
   Serial.print("Contra MQTT: ");
   Serial.println(mqtt_pass);
+
+  //Guardar las configuraciones en archivo para cuando se reinicie
+  if (shouldSaveConfig)
+  {
+    saveConfigFile();
+  }
 }
 
 /*void start_ota_webserver(void)
@@ -222,12 +283,6 @@ void reconnect()
       pubSubClient.subscribe("esp32/output5");
       pubSubClient.subscribe("esp32/output6");
       pubSubClient.subscribe("esp32/output7");
-
-      // Liberamos la memoria de los apuntadores alocados
-      free(mqtt_user);
-      free(mqtt_pass);
-      mqtt_user = nullptr;
-      mqtt_pass = nullptr;
     }
     else
     {
@@ -283,7 +338,7 @@ void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *
 }
 
 // Descarga un archivo JSON con informacion sobre las actualizaciones, y de ser necesario se descarga la ultima version de firmware
-void check_firmware_update(void)
+void checkFirmwareUpdate(void)
 {
   Serial.println("Buscando actualizaciones de Firmware...");
 
@@ -349,4 +404,100 @@ void check_firmware_update(void)
     Serial.printf("Error al descargar el archivo JSON, error: %d (version actual: %.2f)\n", httpResponseCode, FIRMWARE_VERSION);
   }
   http.end();
+}
+
+// Guarda la configuracion en formato JSON en el sistema de archivos SPIFFS
+void saveConfigFile()
+{
+  Serial.println(F("Saving configuration..."));
+  // Create a JSON document
+  StaticJsonDocument<512> json;
+
+  // Add the data to the JSON document
+  json["mqtt_user"] = mqtt_user;
+  json["mqtt_pass"] = mqtt_pass;
+
+  // Open config file
+  File configFile = SPIFFS.open(JSON_CONFIG_FILE, FILE_WRITE);
+  if (!configFile)
+  {
+    // Error, file did not open
+    Serial.println("failed to open config file for writing");
+  }
+
+  // Serialize JSON data to write to file
+  serializeJsonPretty(json, Serial);
+  if (serializeJson(json, configFile) == 0)
+  {
+    // Error writing file
+    Serial.println(F("Failed to write to file"));
+  }
+  // Close file
+  configFile.close();
+}
+
+// Carga la configuracion del archivo JSON guardado en el sistema de archivos SPIFFS
+bool loadConfigFile()
+{
+  // Read configuration from FS json
+  Serial.println("Mounting File System...");
+
+  // May need to make it begin(true) first time you are using SPIFFS
+  if (SPIFFS.begin(false) || SPIFFS.begin(true))
+  {
+    Serial.println("mounted file system");
+    if (SPIFFS.exists(JSON_CONFIG_FILE))
+    {
+      // The file exists, reading and loading
+      Serial.println("reading config file");
+      File configFile = SPIFFS.open(JSON_CONFIG_FILE, FILE_READ);
+      if (configFile)
+      {
+        Serial.println("Opened configuration file");
+        StaticJsonDocument<512> json;
+        DeserializationError error = deserializeJson(json, configFile);
+        serializeJsonPretty(json, Serial);
+        if (!error)
+        {
+          Serial.println("Parsing JSON");
+          strcpy(mqtt_user, json["mqtt_user"]);
+          strcpy(mqtt_pass, json["mqtt_pass"]);
+          Serial.printf("mqtt_user: %s \n", mqtt_user);
+          Serial.printf("mqtt_pass: %s \n", mqtt_pass);
+
+          return true;
+        }
+        else
+        {
+          // Error loading JSON data
+          Serial.println("Failed to load json config");
+        }
+      }
+    }
+  }
+  else
+  {
+    // Error mounting file system
+    Serial.println("Failed to mount FS");
+  }
+  return false;
+}
+
+void saveConfigCallback()
+// Callback notifying us of the need to save configuration
+{
+  Serial.println("Should save config");
+  shouldSaveConfig = true;
+}
+ 
+void configModeCallback(WiFiManager *myWiFiManager)
+// Called when config mode launched
+{
+  Serial.println("Entered Configuration Mode");
+ 
+  Serial.print("Config SSID: ");
+  Serial.println(myWiFiManager->getConfigPortalSSID());
+ 
+  Serial.print("Config IP Address: ");
+  Serial.println(WiFi.softAPIP());
 }
