@@ -23,9 +23,6 @@ Functions.h: se configuran las funciones y dependencias
 #include <FS.h>
 #include <SPIFFS.h>
 
-extern const byte encrypt_key[16];
-extern const int block_size;
-
 extern DHT dht;
 //extern AsyncWebServer server;
 extern WiFiClientSecure wifiSecureClient;
@@ -52,6 +49,8 @@ extern uint8_t prom;         // Promedio
 extern uint8_t humeArray[20];
 extern uint8_t current_hume; // Temperatura actual s
 extern uint8_t promhume;     // Promedio
+
+extern bool shouldSaveConfig;
 
 void wifiConfig(void);
 //void start_ota_webserver(void);

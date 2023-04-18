@@ -5,7 +5,7 @@ Param.h: se configuran los parámetros del dispositivo
 #define param_hpp
 
 // Version del Firmware
-#define FIRMWARE_VERSION 0.47
+#define FIRMWARE_VERSION 0.48
 
 // Actualizaciones de Firmware con autoupdate
 #define UPDATE_JSON_URL "https://firmware.power-pot.com/update/update.json"

@@ -83,11 +83,11 @@ void loop()
 
       humedad = dht.readHumidity();
       dtostrf(humedad, 1, 2, humString);
-      pubSubClient.publish(TOPIC_HUME_AIRE, humString); // esp32/humidity
+      pubSubClient.publish(TOPIC_HUME_AIRE, humString);
 
       temperature = dht.readTemperature();
       dtostrf(temperature, 1, 2, tempString);
-      pubSubClient.publish(TOPIC_TEMPERATURA, tempString); // esp32/temperature
+      pubSubClient.publish(TOPIC_TEMPERATURA, tempString);
 
       digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD));
     }

@@ -66,99 +66,70 @@ void wifiConfig(void)
     forceConfig = true;
   }
 
-  WiFi.mode(WIFI_STA);  
+  // WiFi en modo Station
+  WiFi.mode(WIFI_STA); 
 
-  // Set config save notify callback
+  // Setear callback que indica que se deben guardar las configuraciones obtenidas por WifiManager
   wm.setSaveConfigCallback(saveConfigCallback);
  
-  // Set callback that gets called when connecting to previous WiFi fails, and enters Access Point mode
+  // Setear callback que se ejecuta cuando falla la conexion al WiFi con las credenciales guardadas, y se debe entrar en modo Access Point
   wm.setAPCallback(configModeCallback);
-
-  // Automatically connect using saved credentials,
-  // if connection fails, it starts an access point with the specified name ( "AutoConnectAP"),
-  // if empty will auto generate SSID, if password is blank it will be anonymous AP (wm.autoConnect())
-  // then goes into a blocking loop awaiting configuration and will return success result
 
   // Se definen los parametros a configurar en WifiManager
   WiFiManagerParameter text_mqtt_user("text_mqtt_user", "MQTT User", "", MAX_CREDENTIALS_LEN);
   WiFiManagerParameter text_mqtt_pass("text_mqtt_pass", "MQTT Password", "", MAX_CREDENTIALS_LEN);
-
   wm.addParameter(&text_mqtt_user);
   wm.addParameter(&text_mqtt_pass);
 
+  // Dependiendo si se fuerza la configuracion o se deja en autoconnect
   if (forceConfig)
-    // Run if we need a configuration
   {
     if (!wm.startConfigPortal("PowerPotConfigAP", "password"))  //TODO: Cambiar password por env var
     {
-      Serial.println("failed to connect and hit timeout");
-      delay(3000);
-      //reset and try again, or maybe put it to deep sleep
+      Serial.println("startConfigPortal() fallo y se llego al timeout, reiniciando ESP32...");
+      delay(2000);
       ESP.restart();
       delay(5000);
     }
     else
     {
-      Serial.println("WiFiManager startConfigPortal Exitoso (forceConfig = true)");
+      Serial.println("WiFiManager startConfigPortal() exitoso (forceConfig = true)");
     }
   }
   else
   {
-    if (!wm.autoConnect("PowerPotConfigAP", "password"))
+    if (!wm.autoConnect("PowerPotConfigAP", "password")) //TODO: Cambiar password por env var
     {
-      Serial.println("failed to connect and hit timeout");
-      delay(3000);
-      // if we still have not connected restart and try all over again
+      Serial.println("autoConnect() fallo y se llego al timeout, reiniciando ESP32...");
+      delay(2000);
       ESP.restart();
       delay(5000);
     }
     else
     {
-      Serial.println("WiFiManager AutoConnect Exitoso");
+      Serial.println("WiFiManager autoConnect() exitoso");
     }
   }
 
   // Las credenciales MQTT solo deben sobreescribirse si se configuraron, pero si se obtubieron de SPIFFS no deben sobreescribirse
-  
-  // Si no se cargo la configuracion
+  // Si no se cargo la configuracion significa que se configuro esta vez y debemos guardar
   if(!spiffsSetup)
   {
     strcpy(mqtt_user, text_mqtt_user.getValue());
     strcpy(mqtt_pass, text_mqtt_pass.getValue());
   }
 
-  /*
-  bool res;
-  // res = wm.autoConnect(); // auto generated AP name from chipid
-  // res = wm.autoConnect("AutoConnectAP"); // anonymous ap
-  res = wm.autoConnect("PowerPotConfigAP", "password"); // password protected ap
-
-  if (!res)
-  {
-    Serial.println("Error en WiFiManager, no se pudo conectar.");
-    // ESP.restart();
-  }
-  else
-  {
-    // if you get here you have connected to the WiFi
-    Serial.println("Conectado exitosamente con WiFiManager");
-  }*/
-
-  // Se setean las variables globales de las credenciales MQTT
-  //mqtt_user = (char *)malloc(sizeof(char) * text_mqtt_user.getValueLength());
-  //mqtt_pass = (char *)malloc(sizeof(char) * text_mqtt_pass.getValueLength());
-  //strcpy(mqtt_user, text_mqtt_user.getValue());
-  //strcpy(mqtt_pass, text_mqtt_pass.getValue());
-
   Serial.println("");
   Serial.print("Conectado a la red: ");
   Serial.println(WiFi.SSID());
   Serial.print("Dirección IP: ");
   Serial.println(WiFi.localIP());
+  //---- TODO: Quitar cuando funcione bien ----
   Serial.print("Usuario MQTT: ");
   Serial.println(mqtt_user);
   Serial.print("Contra MQTT: ");
   Serial.println(mqtt_pass);
+  //---- TODO: Quitar cuando funcione bien ----
 
   //Guardar las configuraciones en archivo para cuando se reinicie
   if (shouldSaveConfig)
@@ -409,91 +380,86 @@ void checkFirmwareUpdate(void)
 // Guarda la configuracion en formato JSON en el sistema de archivos SPIFFS
 void saveConfigFile()
 {
-  Serial.println(F("Saving configuration..."));
-  // Create a JSON document
+  Serial.println(F("Guardando configuracion..."));
+  // Se crea el JSON
   StaticJsonDocument<512> json;
 
-  // Add the data to the JSON document
+  // Se agregan las configuraciones que deben ser guardadas
   json["mqtt_user"] = mqtt_user;
   json["mqtt_pass"] = mqtt_pass;
 
-  // Open config file
+  // Se abre el archivo de configuracion
   File configFile = SPIFFS.open(JSON_CONFIG_FILE, FILE_WRITE);
   if (!configFile)
   {
-    // Error, file did not open
-    Serial.println("failed to open config file for writing");
+    Serial.println("Fallo al abrir el archivo de configuracion en SPIFFS");
   }
 
-  // Serialize JSON data to write to file
+  // Serializar JSON para escribirlo en el archivo
   serializeJsonPretty(json, Serial);
   if (serializeJson(json, configFile) == 0)
   {
-    // Error writing file
-    Serial.println(F("Failed to write to file"));
+    Serial.println(F("Error al escribir en el archivo de configuracion en SPIFFS"));
   }
-  // Close file
+  // Se cierra el archivo
   configFile.close();
 }
 
 // Carga la configuracion del archivo JSON guardado en el sistema de archivos SPIFFS
 bool loadConfigFile()
 {
-  // Read configuration from FS json
   Serial.println("Mounting File System...");
 
-  // May need to make it begin(true) first time you are using SPIFFS
+  // Dependiendo si es la primera vez que se usa SPIFFS
   if (SPIFFS.begin(false) || SPIFFS.begin(true))
   {
-    Serial.println("mounted file system");
+    Serial.println("Mounted file system");
     if (SPIFFS.exists(JSON_CONFIG_FILE))
     {
-      // The file exists, reading and loading
-      Serial.println("reading config file");
+      // Si el archivo existe se leen sus configuraciones
+      Serial.println("Leyendo archivo de configuraciones en SPIFFS...");
       File configFile = SPIFFS.open(JSON_CONFIG_FILE, FILE_READ);
       if (configFile)
       {
-        Serial.println("Opened configuration file");
+        Serial.println("Se abrio el archivo de configuraciones con exito");
         StaticJsonDocument<512> json;
         DeserializationError error = deserializeJson(json, configFile);
-        serializeJsonPretty(json, Serial);
+        // Se muestra en el Serial Monitor el JSON
+        serializeJsonPretty(json, Serial); //TODO: Decidir si se debe ocultar esta info
+        Serial.println("");
+
         if (!error)
         {
           Serial.println("Parsing JSON");
           strcpy(mqtt_user, json["mqtt_user"]);
           strcpy(mqtt_pass, json["mqtt_pass"]);
-          Serial.printf("mqtt_user: %s \n", mqtt_user);
-          Serial.printf("mqtt_pass: %s \n", mqtt_pass);
-
           return true;
         }
         else
         {
-          // Error loading JSON data
-          Serial.println("Failed to load json config");
+          Serial.println("Error al cargar el JSON");
         }
       }
     }
   }
   else
   {
-    // Error mounting file system
-    Serial.println("Failed to mount FS");
+    Serial.println("Error al montar el File System");
   }
   return false;
 }
 
+// Callback que indica que se deben guardar las configuraciones
 void saveConfigCallback()
-// Callback notifying us of the need to save configuration
 {
-  Serial.println("Should save config");
+  Serial.println("Se guardaran las configuraciones en SPIFFS");
   shouldSaveConfig = true;
 }
  
+// Callback que se ejecuta cuando se entra en modo configuracion
 void configModeCallback(WiFiManager *myWiFiManager)
-// Called when config mode launched
 {
-  Serial.println("Entered Configuration Mode");
+  Serial.println("Entrando en Modo Configuracion de WifiManager");
  
   Serial.print("Config SSID: ");
   Serial.println(myWiFiManager->getConfigPortalSSID());
