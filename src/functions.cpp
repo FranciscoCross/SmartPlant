@@ -88,6 +88,7 @@ void wifiConfig(void)
     {
       Serial.println("startConfigPortal() fallo y se llego al timeout, reiniciando ESP32...");
       delay(2000);
+      //TODO: AGREGAR TIMEOUT , BORRAR CONFIGS Y RESETEAR
       ESP.restart();
       delay(5000);
     }
@@ -102,6 +103,7 @@ void wifiConfig(void)
     {
       Serial.println("autoConnect() fallo y se llego al timeout, reiniciando ESP32...");
       delay(2000);
+      //TODO: AGREGAR TIMEOUT , BORRAR CONFIGS Y RESETEAR
       ESP.restart();
       delay(5000);
     }
