@@ -45,7 +45,8 @@ void setup(void)
   pinMode(LED_3, OUTPUT);
   Serial.begin(115200);
 
-  start_ota_webserver();
+  wifiConfig();
+  //start_ota_webserver();
   wifiSecureClient.setCACert(SERVER_CERTIFICATE);
   // wifiSecureClient.setInsecure();
   pubSubClient.setServer(mqtt_server, MQTT_PORT);
@@ -82,16 +83,17 @@ void loop()
 
       humedad = dht.readHumidity();
       dtostrf(humedad, 1, 2, humString);
-      pubSubClient.publish(TOPIC_HUME_AIRE, humString); // esp32/humidity
+      pubSubClient.publish(TOPIC_HUME_AIRE, humString);
 
       temperature = dht.readTemperature();
       dtostrf(temperature, 1, 2, tempString);
-      pubSubClient.publish(TOPIC_TEMPERATURA, tempString); // esp32/temperature
+      pubSubClient.publish(TOPIC_TEMPERATURA, tempString);
 
-      digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD));
+      //Alternar el estado del LED para indicar una vuelta del loop
+      digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD)); 
     }
   }
 
   // Comprobar actualizaciones de firmware
-  check_firmware_update();
+  checkFirmwareUpdate();
 }
