@@ -89,7 +89,8 @@ void loop()
       dtostrf(temperature, 1, 2, tempString);
       pubSubClient.publish(TOPIC_TEMPERATURA, tempString);
 
-      digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD));
+      //Alternar el estado del LED para indicar una vuelta del loop
+      digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD)); 
     }
   }
 

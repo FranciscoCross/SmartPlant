@@ -5,7 +5,7 @@ Param.h: se configuran los parámetros del dispositivo
 #define param_hpp
 
 // Version del Firmware
-#define FIRMWARE_VERSION 0.48
+#define FIRMWARE_VERSION 0.49
 
 // Actualizaciones de Firmware con autoupdate
 #define UPDATE_JSON_URL "https://firmware.power-pot.com/update/update.json"
@@ -48,5 +48,6 @@ Param.h: se configuran los parámetros del dispositivo
 // Guardar configuracion en memoria no volátil
 #define JSON_CONFIG_FILE "/config.json"
 #define MAX_CREDENTIALS_LEN 50
+#define CONFIG_TIMEOUT 60 //Tiempo en segundos esperando configuracion de WiFiManager
 
 #endif

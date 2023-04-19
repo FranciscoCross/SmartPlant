@@ -56,6 +56,9 @@ void wifiConfig(void)
 
   // Debug info
   wm.setDebugOutput(true);
+
+  // set configportal timeout
+  wm.setConfigPortalTimeout(CONFIG_TIMEOUT);
  
   bool spiffsSetup = loadConfigFile();
 
@@ -81,16 +84,16 @@ void wifiConfig(void)
   wm.addParameter(&text_mqtt_user);
   wm.addParameter(&text_mqtt_pass);
 
+  // Se enciende el LED para indicar que se está en modo configuracion
+  digitalWrite(LED_ONBOARD, HIGH);
+
   // Dependiendo si se fuerza la configuracion o se deja en autoconnect
   if (forceConfig)
   {
     if (!wm.startConfigPortal("PowerPotConfigAP", "password"))  //TODO: Cambiar password por env var
     {
-      Serial.println("startConfigPortal() fallo y se llego al timeout, reiniciando ESP32...");
-      delay(2000);
-      //TODO: AGREGAR TIMEOUT , BORRAR CONFIGS Y RESETEAR
-      ESP.restart();
-      delay(5000);
+      Serial.println("startConfigPortal() fallo y se llego al timeout");
+      resetWifiConfig();
     }
     else
     {
@@ -101,11 +104,8 @@ void wifiConfig(void)
   {
     if (!wm.autoConnect("PowerPotConfigAP", "password")) //TODO: Cambiar password por env var
     {
-      Serial.println("autoConnect() fallo y se llego al timeout, reiniciando ESP32...");
-      delay(2000);
-      //TODO: AGREGAR TIMEOUT , BORRAR CONFIGS Y RESETEAR
-      ESP.restart();
-      delay(5000);
+      Serial.println("autoConnect() fallo y se llego al timeout");
+      resetWifiConfig();
     }
     else
     {
@@ -138,6 +138,9 @@ void wifiConfig(void)
   {
     saveConfigFile();
   }
+
+  // Se apaga el LED para indicar que finalizó el modo configuracion
+  digitalWrite(LED_ONBOARD, LOW);
 }
 
 /*void start_ota_webserver(void)
@@ -468,4 +471,19 @@ void configModeCallback(WiFiManager *myWiFiManager)
  
   Serial.print("Config IP Address: ");
   Serial.println(WiFi.softAPIP());
+}
+
+void resetWifiConfig()
+{
+  // Se apaga el LED para indicar que se está reseteando configuraciones y reiniciando el ESP32
+  digitalWrite(LED_ONBOARD, LOW);
+  Serial.println("Reseteando configuracion de WiFi y MQTT...");
+  delay(2000);
+  wm.resetSettings();
+  Serial.println("Formateando SPIFFS Filesystem...");
+  SPIFFS.format();
+  Serial.println("Reseteando ESP32...");
+  delay(2000);
+  ESP.restart();
+  delay(5000);
 }

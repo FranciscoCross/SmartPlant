@@ -65,4 +65,5 @@ void saveConfigFile(void);
 bool loadConfigFile(void);
 void saveConfigCallback(void);
 void configModeCallback(WiFiManager *myWiFiManager);
+void resetWifiConfig(void);
 #endif
