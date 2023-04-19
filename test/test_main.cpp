@@ -1,29 +1,24 @@
+//Se incluye la libreria del framework de testing Unity
 #include <unity.h>
 
+//Se incluyen las mismas funciones usadas en el firmware oficial para un testeo fehaciente
 #include "param.hpp"
 #include "functions.hpp"
 #include "functions.cpp"
 
 void setUp(void)
 {
-  // set stuff up here
+  // Setear lo necesario antes de todos los tests
 }
 
 void tearDown(void)
 {
-  // clean stuff up here
-}
-
-void test_simple(void)
-{
-    // Simple test if 33 = 33 to check test_custom_runner.py
-    TEST_ASSERT_EQUAL(33, 33);
+  // Limpiar lo necesario despues de todos los tests
 }
 
 void test_valid_frequency(void)
 {
-  Serial.println("Test: Checkeando Frecuencia dentro del rango válido");
-  //Test if DELAY value (blink frequency) is between 50 and 5000 ms
+  Serial.println("Test: Checkeando Frecuencia dentro del rango válido (Entre 50 y 5000 ms)");
   TEST_ASSERT_GREATER_OR_EQUAL(50, DELAY);
   TEST_ASSERT_LESS_OR_EQUAL(5000, DELAY);
 }
@@ -41,21 +36,19 @@ void test_mqtt_connection(void)
 
 void setup()
 {
-  // NOTE!!! Wait for >2 secs
-  // if board doesn't support software reset via Serial.DTR/RTS
+  // Esperar al menos 2 segundos para que se inicialicen bien los tests
   delay(2000);
 
   pinMode(LED_ONBOARD, OUTPUT);
   Serial.begin(115200);
   
-  start_ota_webserver();
+  wifiConfig();
   pubSubClient.setServer(mqtt_server, MQTT_PORT);
   pubSubClient.setCallback(callback);
 
   Serial.println("Iniciando Tests...");
   UNITY_BEGIN();
   digitalWrite(LED_ONBOARD, HIGH);
-  //RUN_TEST(test_simple);
   RUN_TEST(test_valid_frequency);
   RUN_TEST(test_mqtt_connection);
   Serial.println("Finalizando Tests...");
@@ -63,5 +56,6 @@ void setup()
 
 void loop()
 {
-  UNITY_END(); // stop unit testing
+  // Una vez que termina el setup() terminar Unit Testing
+  UNITY_END(); 
 }

@@ -18,6 +18,7 @@ env:
   MQTT_USER: ${{ secrets.MQTT_USER }}
   MQTT_PASS: ${{ secrets.MQTT_PASS }}
   MQTT_SERV: ${{ secrets.MQTT_SERV }}
+# TODO: Definir si dejamos todas las placas con el mismo ID o como lo manejamos
   ESP32_ID1: ${{ secrets.ESP32_ID1 }}
   ESP32_IP1: ${{ secrets.ESP32_IP1 }}
   VERSION: $(awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp)
@@ -30,6 +31,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: "unit tests"
         run: |
+          echo "Unit Tests"
           pio test -vv
       - name: "Set firmware version"
         run: |
