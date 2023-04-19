@@ -3,6 +3,7 @@ version: "3.7"
 services:
   runner:
     image: feedehc/github-docker-runner
+#    image: feedehc/github-docker-runner:linux-arm
     container_name: runner-self-hosted
     privileged: true
     environment:
