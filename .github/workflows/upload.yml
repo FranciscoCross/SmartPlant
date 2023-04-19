@@ -2,12 +2,6 @@ name: Build and Upload
 
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
-#  push:
-#    branches: [ "main" ]
-#    paths:
-#      - 'src/*'
-#      - 'include/*'
-#      - 'test/*'
   pull_request:
     branches: [ "main" ]
     paths:
@@ -18,40 +12,36 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  WIFI_SSID: ${{ secrets.WIFI_SSID }}
+  WIFI_PASS: ${{ secrets.WIFI_PASS }}
+  MQTT_USER: ${{ secrets.MQTT_USER }}
+  MQTT_PASS: ${{ secrets.MQTT_PASS }}
+  MQTT_SERV: ${{ secrets.MQTT_SERV }}
+# TODO: Definir si dejamos todas las placas con el mismo ID o como lo manejamos
+  ESP32_ID1: ${{ secrets.ESP32_ID1 }}
+  ESP32_IP1: ${{ secrets.ESP32_IP1 }}
+  VERSION: $(awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp)
+
 jobs:
   build:
     name: "Build-Test-Upload"
     runs-on: self-hosted    
     steps:    
       - uses: actions/checkout@v3
-#      - name: "Setup Python"
-#        uses: actions/setup-python@v4
-#        with:
-#          python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
-#          architecture: 'x64' # optional x64 or x86. Defaults to x64 if not specified
-#      - name: Install Dependencies
-#        run: |
-#          python -m pip install --upgrade pip
-#          pip install platformio
-#          pip install PyGithub
-#      - name: "build code"
-#        env:
-#          WIFI_SSID: ${{ secrets.WIFI_SSID }}
-#          WIFI_PASS: ${{ secrets.WIFI_PASS }}
-#          MQTT_USER: ${{ secrets.MQTT_USER }}
-#          MQTT_PASS: ${{ secrets.MQTT_PASS }}
-#        run: |
-#          pio run
-#pio test works for USB serial connection but not for OTA WIFI
-#      - name: "unit test"
-#        run: |
-#          pio test -vvv --environment nodemcu-32s
-      - name: "upload to board"
-        env:
-          WIFI_SSID: ${{ secrets.WIFI_SSID }}
-          WIFI_PASS: ${{ secrets.WIFI_PASS }}
-          MQTT_USER: ${{ secrets.MQTT_USER }}
-          MQTT_PASS: ${{ secrets.MQTT_PASS }}
-          ESP32_IP1: ${{ secrets.ESP32_IP1 }}
+      - name: "unit tests"
+        run: |
+          echo "Unit Tests"
+          pio test -vv
+      - name: "Set firmware version"
+        run: |
+          echo "VERSION=${{ env.VERSION }}"
+      - name: "build firmware"
         run: |
           pio run --target upload --environment nodemcu-32s
+          cp .pio/build/nodemcu-32s/firmware.bin /home/runner/firmware/update/firmware-${{ env.VERSION }}.bin
+          echo "Firmware.bin compilado y copiado a /home/runner/firmware/update"
+          cp /home/runner/firmware/update/update.json update.json
+          jq --argjson version_arg ${{ env.VERSION }} '.version |= $version_arg | .version |= tonumber' update.json > tmp && mv tmp update.json
+          cp update.json /home/runner/firmware/update/update.json
+          echo "update.json actualizado con la ultima version: ${{ env.VERSION }}"

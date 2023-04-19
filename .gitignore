@@ -4,4 +4,4 @@
 .pio
 sdkconfig.nodemcu-32s
 .env
-/clientBroker/src/credentials.h
+/test/__pycache__
