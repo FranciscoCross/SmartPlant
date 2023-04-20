@@ -46,7 +46,7 @@ void wifiConfig(void)
   bool forceConfig = false;
 
   // Formatear SPIFFS para testing
-  SPIFFS.format();
+  // SPIFFS.format();
 
   // Eliminar la configuracion guardada de WiFiManager
   // wm.resetSettings();
