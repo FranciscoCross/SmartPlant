@@ -1,5 +1,5 @@
 /*
-Functions.h: se configuran las funciones y dependencias
+functions.hpp: se configuran las funciones y dependencias
 */
 #ifndef functions_hpp
 #define functions_hpp
