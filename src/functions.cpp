@@ -37,8 +37,6 @@ uint8_t promhume = 0;     // Promedio
 
 // Flag para indicar en que momento se guarda la configuracion
 bool shouldSaveConfig = false;
-// Flag para indicar que se impriman credenciales en serial monitor, solo para debug no usar en producción!
-bool wifiDebugMode = false;
 
 void wifiConfig(void)
 {
@@ -128,7 +126,7 @@ void wifiConfig(void)
   Serial.println(WiFi.localIP());
 
   // Solo se muestra si se está en modo debug, para pruebas locales, no usar en produccion
-  if (wifiDebugMode)
+  if (WIFI_DEBUG_MODE)
   {
     Serial.print("Usuario MQTT: ");
     Serial.println(mqtt_user);
@@ -270,7 +268,7 @@ void reconnect()
       Serial.print("Error al conectar PubSubClient, state:");
       Serial.print(pubSubClient.state());
       // Solo se muestra si se está en modo debug, para pruebas locales, no usar en produccion
-      if(wifiDebugMode)
+      if(WIFI_DEBUG_MODE)
       {
         Serial.printf("// mqtt_user: %s // mqtt_pass: %s // esp32_id: %s", mqtt_user, mqtt_pass, esp32_id);
       }
@@ -413,7 +411,7 @@ void saveConfigFile()
   }
 
   // Solo se muestra si se está en modo debug, para pruebas locales, no usar en produccion
-  if (wifiDebugMode)
+  if (WIFI_DEBUG_MODE)
   {
     serializeJsonPretty(json, Serial);
   }
@@ -448,7 +446,7 @@ bool loadConfigFile()
         DeserializationError error = deserializeJson(json, configFile);
 
         // Solo se muestra si se está en modo debug, para pruebas locales, no usar en produccion
-        if (wifiDebugMode)
+        if (WIFI_DEBUG_MODE)
         {
           // Se muestra en el Serial Monitor el JSON
           serializeJsonPretty(json, Serial);

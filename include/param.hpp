@@ -11,7 +11,7 @@ param.hpp: se configuran los parámetros del dispositivo
 #define UPDATE_JSON_URL "https://firmware.power-pot.com/update/update.json"
 
 // Cantidad de veces que se ejecuta el bucle principal para comprobar actualizaciones de firmware
-#define N_LOOPS_CHECK_FIRMWARE_UPDATE 60
+#define N_LOOPS_CHECK_FIRMWARE_UPDATE 120
 
 // Tiempo en ms para esperar antes de cambiar el estado del LED
 #define DELAY 200
@@ -48,6 +48,7 @@ param.hpp: se configuran los parámetros del dispositivo
 // Guardar configuracion en memoria no volátil
 #define JSON_CONFIG_FILE "/config.json"
 #define MAX_CREDENTIALS_LEN 50
-#define CONFIG_TIMEOUT 60 //Tiempo en segundos esperando configuracion de WiFiManager
+#define CONFIG_TIMEOUT 120 //Tiempo en segundos esperando configuracion de WiFiManager
+#define WIFI_DEBUG_MODE false
 
 #endif
