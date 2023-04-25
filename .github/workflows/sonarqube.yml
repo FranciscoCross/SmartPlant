@@ -35,14 +35,14 @@ jobs:
       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       - name: "Download SonarQube Requirements"
         run: |
-        mkdir -p sonarqube
-        cd sonarqube
-        wget --no-verbose https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
-        unzip -qq build-wrapper-linux-x86.zip
-        rm build-wrapper-linux-x86.zip
-        wget --no-verbose https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
-        unzip -qq sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
-        rm sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
-        mkdir -p output
-        ./sonarqube/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ./sonarqube/output/ platformio run
-        ./sonarqube/sonar-scanner-${{ env.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=${{ env.SONAR_TOKEN }} -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
+          mkdir -p sonarqube
+          cd sonarqube
+          wget --no-verbose https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+          unzip -qq build-wrapper-linux-x86.zip
+          rm build-wrapper-linux-x86.zip
+          wget --no-verbose https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
+          unzip -qq sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
+          rm sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
+          mkdir -p output
+          ./sonarqube/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ./sonarqube/output/ platformio run
+          ./sonarqube/sonar-scanner-${{ env.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=${{ env.SONAR_TOKEN }} -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
