@@ -37,6 +37,8 @@ uint8_t promhume = 0;     // Promedio
 
 // Flag para indicar en que momento se guarda la configuracion
 bool shouldSaveConfig = false;
+// Cantidad de veces que falló la conexión a MQTT
+uint8_t mqtt_error_count = 0;
 
 void wifiConfig(void)
 {
@@ -262,16 +264,30 @@ void reconnect()
       pubSubClient.subscribe("esp32/output5");
       pubSubClient.subscribe("esp32/output6");
       pubSubClient.subscribe("esp32/output7");
+
+      mqtt_error_count = 0;
     }
     else
     {
+      /*Si ya pasaron muchas veces intentando conectarse a MQTT y sigue fallando reiniciamos la ESP32 sin borrar SPIFFS para probar reconectarse, 
+      por las dudas que sea un problema del servidor MQTT y no de las configuraciones de WiFi,
+      si al reiniciar sigue sin poder conectarse es porque se perdio la conexion a WiFi entonces se llegará al timeout y se borrarán las configs de SPIFFS
+      */
+      if(mqtt_error_count >= MAX_MQTT_ERRORS)
+      {
+        Serial.println("La conexion a MQTT falló demasiadas veces, reiniciando ESP32...");
+        delay(2000);
+        ESP.restart(); //Se reincia la placa sin eliminar las configuraciones guardadas
+      }
       Serial.print("Error al conectar PubSubClient, state:");
       Serial.print(pubSubClient.state());
       // Solo se muestra si se está en modo debug, para pruebas locales, no usar en produccion
       if(WIFI_DEBUG_MODE)
       {
-        Serial.printf("// mqtt_user: %s // mqtt_pass: %s // esp32_id: %s", mqtt_user, mqtt_pass, esp32_id);
+        Serial.printf("// mqtt_user: %s // mqtt_pass: %s // esp32_id: %s\n", mqtt_user, mqtt_pass, esp32_id);
+        Serial.printf("mqtt_error_count: %d\n", mqtt_error_count);
       }
+      mqtt_error_count++;
 
       Serial.println(" Intentando de nuevo en 5 segundos...");
       delay(5000);

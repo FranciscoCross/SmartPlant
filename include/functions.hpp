@@ -51,6 +51,7 @@ extern uint8_t current_hume; // Temperatura actual s
 extern uint8_t promhume;     // Promedio
 
 extern bool shouldSaveConfig;
+extern uint8_t mqtt_error_count;
 
 void wifiConfig(void);
 //void start_ota_webserver(void);
