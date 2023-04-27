@@ -1,7 +1,7 @@
 name: Build and Upload
 
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
+  # Se activa este workflow automáticamente cada vez que se hace un Pull Request hacia la rama "main", que contenga cambios en src include o test
   pull_request:
     branches: [ "main" ]
     paths:
@@ -9,18 +9,15 @@ on:
       - 'include/*'
       - 'test/*'
 
-  # Allows you to run this workflow manually from the Actions tab
+  # Esta línea permite accionar el workflow manualmente desde GitHub Actions, muy útil para testear correrlo incluso en otras ramas
   workflow_dispatch:
 
 env:
-  WIFI_SSID: ${{ secrets.WIFI_SSID }}
-  WIFI_PASS: ${{ secrets.WIFI_PASS }}
-  MQTT_USER: ${{ secrets.MQTT_USER }}
-  MQTT_PASS: ${{ secrets.MQTT_PASS }}
+# Dirección del servidor MQTT a conectarse
   MQTT_SERV: ${{ secrets.MQTT_SERV }}
-# TODO: Definir si dejamos todas las placas con el mismo ID o como lo manejamos
-  ESP32_ID1: ${{ secrets.ESP32_ID1 }}
-  ESP32_IP1: ${{ secrets.ESP32_IP1 }}
+# Contraseña del Access Point que ofrece WifiManager para configurar las credenciales
+  WMAP_PASS: ${{ secrets.WMAP_PASS }}
+# Comando para leer la Versión del Firmware actualizada en el repositorio
   VERSION: $(awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp)
 
 jobs:
