@@ -17,7 +17,7 @@ on:
 env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-  SONAR_VERSION: "4.7.0.2747"
+  SONAR_VERSION: "4.8.0.2856"
 
 
 jobs:
