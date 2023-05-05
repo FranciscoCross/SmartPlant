@@ -6,3 +6,4 @@ sdkconfig.nodemcu-32s
 .env
 /test/__pycache__
 .scannerwork
+/cov-int
