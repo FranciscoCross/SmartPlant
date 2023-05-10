@@ -26,6 +26,8 @@ void setup(void)
   ledcSetup(PWM_LED_CHANNEL, PWM_FREQ, PWM_RESOLUTION);
   ledcAttachPin(PWM_LED, PWM_LED_CHANNEL);
   dht.begin();
+  //int a[5];
+  //a[6] = 1;
 }
 
 void loop()
