@@ -35,7 +35,13 @@ jobs:
           echo "VERSION=${{ env.VERSION }}"
       - name: "build firmware"
         run: |
-          pio run --target upload --environment nodemcu-32s
+          pio run --target upload --environment nodemcu-32s 
+      - name: "platformio check with cppcheck"
+        run: |
+          pio check --fail-on-defect=high
+          echo "Platformio Check finalizado"
+      - name: "set new version to update server"
+        run: |
           cp .pio/build/nodemcu-32s/firmware.bin /home/runner/firmware/update/firmware-${{ env.VERSION }}.bin
           echo "Firmware.bin compilado y copiado a /home/runner/firmware/update"
           cp /home/runner/firmware/update/update.json update.json
