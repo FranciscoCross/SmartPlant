@@ -1,6 +1,3 @@
-# Pipeline-ESP32
-El objetivo de este proyecto es crear un Pipeline DevOps para dispositivos de Internet de las Cosas (Internet of Things, IoT), en este caso un microcontrolador ESP32. El objetivo principal es tener un workflow con una serie de acciones que se desencadenan cuando se pushean cambios en la carpeta de codigo fuente del repositorio.
-
 ## Para Comenzar
 ### Fork Repository
 Lo primero que se necesita es forkear este repositorio en su cuenta de GitHub, porque necesitará un access token para darle permisos al runner.
@@ -17,7 +14,7 @@ sudo apt install docker-compose
 Para Windows (u otro SO) por favor diríjase a [Docker Documentation](https://docs.docker.com/desktop/windows/install).
 
 ### Credenciales
-Por motivos de seguridad debe crear un GitHub Access Token, el cual le da permisos sobre su cuenta de GutHub para permitir que un self-hosted runner pueda ejecutar las tareas (jobs) del pipeline.
+Por motivos de seguridad debe crear un GitHub Access Token, el cual le da permisos sobre su cuenta de GitHub para permitir que un self-hosted runner pueda ejecutar las tareas (jobs) del pipeline.
 Cree un archivo llamado ".env" en la carpeta raíz de su repositorio. Nótese que este archivo está incluido en el .gitignore, ya que sus credenciales no se deben compartir. En este archivo debe agregar:
 ```
 RUNNER_REPOSITORY_URL=URL of your Forked Repository
@@ -56,6 +53,7 @@ Para desencadenar el workflow se necesita pushear cambios en las carpetas: **/sr
 ### Tests
 Hay 2 tests simples que se realizan antes de cargar el código a la placa. El primero es chequear si el valor de DELAY es mayor o igual a 50 ms, y el segundo es si el valor de DELAY es menor o igual a 5000 ms.
 Si se elije un valor fuera del **rango válido de DELAY (50 - 5000ms)**, los tests fallarán y **el código no se cargará en la placa**, simulando una prevención de posibles daños.
+
 
 ## Referencias
 - [Docker](https://www.docker.com)
