@@ -38,7 +38,7 @@ jobs:
     - if: matrix.language == 'cpp'
       name: Build with PlatformIO
       run: |
-        python3 -c "$(curl -fsSL https://raw.githubusercontent.com/platformio/platformio/master/scripts/get-platformio.py)"
+        python3 -c "$(curl -fsSL -o get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py)"
         /home/runner/.platformio/penv/bin/platformio run --environment nodemcu-32s
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
