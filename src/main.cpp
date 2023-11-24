@@ -7,6 +7,7 @@ DHT dht(DHTPIN, DHTTYPE);
 //-----------------Arduino-Setup-y-Loop-------------------------//
 void setup(void)
 {
+  //resetWifiConfig();
   pinMode(LED_ONBOARD, OUTPUT);
   pinMode(LED_1, OUTPUT);
   pinMode(LED_2, OUTPUT);
@@ -17,6 +18,10 @@ void setup(void)
   //start_ota_webserver();
   wifiSecureClient.setCACert(SERVER_CERTIFICATE);
   // wifiSecureClient.setInsecure(); // Se puede usar para ignorar el certificado y conectarse de forma insegura para testing
+  if (mqtt_server == nullptr || mqtt_server[0] == '\0') 
+  {
+    mqtt_server = "mqtt.power-pot.com"; // Asigna directamente el valor predeterminado aquí
+  }
   pubSubClient.setServer(mqtt_server, MQTT_PORT);
   pubSubClient.setCallback(callback);
 

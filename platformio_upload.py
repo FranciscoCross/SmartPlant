@@ -1,4 +1,3 @@
-# Allows PlatformIO to upload directly to AsyncElegantOTA
 #
 # To use:
 # - copy this script into the same folder as your platformio.ini

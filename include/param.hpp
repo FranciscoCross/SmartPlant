@@ -48,7 +48,7 @@ param.hpp: se configuran los parámetros del dispositivo
 // Guardar configuracion en memoria no volátil
 #define JSON_CONFIG_FILE "/config.json"
 #define MAX_CREDENTIALS_LEN 50
-#define CONFIG_TIMEOUT 120 //Tiempo en segundos esperando configuracion de WiFiManager
+#define CONFIG_TIMEOUT 300 //Tiempo en segundos esperando configuracion de WiFiManager
 #define WIFI_DEBUG_MODE false
 #define MAX_MQTT_ERRORS 30
 
