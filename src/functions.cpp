@@ -1,6 +1,5 @@
 #include "functions.hpp"
 #include "param.hpp"
-// #include <AsyncElegantOTA.h>
 
 // AsyncWebServer server(80);
 WiFiClient wifi;
@@ -8,21 +7,15 @@ WiFiClientSecure wifiSecureClient;
 PubSubClient pubSubClient(wifi);
 WiFiManager wm;
 
-// Se toman las credenciales de las variables de entorno. Ver platformio.ini, sección build_flags
-/*
-const char *ssid = WIFI_SSID;
-const char *password = WIFI_PASS;
-const char *mqtt_user = MQTT_USER;
-const char *mqtt_pass = MQTT_PASS;
-*/
-
 // Credenciales MQTT, se setean con WiFiManager en la funcion wifi_config()
 char mqtt_user[MAX_CREDENTIALS_LEN];
 char mqtt_pass[MAX_CREDENTIALS_LEN];
+char esp32_id[MAX_CREDENTIALS_LEN];
 
-// Dirección IP del BROKER MQTT
+// Dirección IP del BROKER MQTT, obtenida por variable de entorno, ver platformio.ini
 const char *mqtt_server = MQTT_SERV;
-const char *mqtt_client_id = ESP32_ID1;
+// Contraseña del Access Point que ofrece WifiManager para configurar las credenciales
+const char *wm_ap_pass = WMAP_PASS;
 
 long lastMsg = 0;
 int value = 0;
@@ -41,7 +34,10 @@ uint8_t humeArray[20] = {0};
 uint8_t current_hume = 0; // Humedad actual
 uint8_t promhume = 0;     // Promedio
 
+// Flag para indicar en que momento se guarda la configuracion
 bool shouldSaveConfig = false;
+// Cantidad de veces que falló la conexión a MQTT
+uint8_t mqtt_error_count = 0;
 
 void wifiConfig(void)
 {
@@ -49,17 +45,17 @@ void wifiConfig(void)
   bool forceConfig = false;
 
   // Formatear SPIFFS para testing
-  //SPIFFS.format();
+  // SPIFFS.format();
 
   // Eliminar la configuracion guardada de WiFiManager
-  //wm.resetSettings();
+  // wm.resetSettings();
 
-  // Debug info
+  // WifiManager Debug Info en Serial Monitor
   wm.setDebugOutput(true);
 
   // set configportal timeout
   wm.setConfigPortalTimeout(CONFIG_TIMEOUT);
- 
+
   bool spiffsSetup = loadConfigFile();
 
   // Si no se cargo la configuracion
@@ -70,27 +66,32 @@ void wifiConfig(void)
   }
 
   // WiFi en modo Station
-  WiFi.mode(WIFI_STA); 
+  WiFi.mode(WIFI_STA);
 
   // Setear callback que indica que se deben guardar las configuraciones obtenidas por WifiManager
   wm.setSaveConfigCallback(saveConfigCallback);
- 
+
   // Setear callback que se ejecuta cuando falla la conexion al WiFi con las credenciales guardadas, y se debe entrar en modo Access Point
   wm.setAPCallback(configModeCallback);
 
   // Se definen los parametros a configurar en WifiManager
   WiFiManagerParameter text_mqtt_user("text_mqtt_user", "MQTT User", "", MAX_CREDENTIALS_LEN);
   WiFiManagerParameter text_mqtt_pass("text_mqtt_pass", "MQTT Password", "", MAX_CREDENTIALS_LEN);
+  WiFiManagerParameter text_esp32_id("text_esp32_id", "ESP32-ID", "", MAX_CREDENTIALS_LEN);
   wm.addParameter(&text_mqtt_user);
   wm.addParameter(&text_mqtt_pass);
+  wm.addParameter(&text_esp32_id);
 
   // Se enciende el LED para indicar que se está en modo configuracion
   digitalWrite(LED_ONBOARD, HIGH);
-
+  if (wm_ap_pass == nullptr || wm_ap_pass[0] == '\0') 
+  {
+    Serial.println("WIFI MANAGER NO TIENE PASS DEFAULT");
+  }
   // Dependiendo si se fuerza la configuracion o se deja en autoconnect
   if (forceConfig)
   {
-    if (!wm.startConfigPortal("PowerPotConfigAP", "password"))  //TODO: Cambiar password por env var
+    if (!wm.startConfigPortal("PowerPotConfigAP", wm_ap_pass))
     {
       Serial.println("startConfigPortal() fallo y se llego al timeout");
       resetWifiConfig();
@@ -102,7 +103,7 @@ void wifiConfig(void)
   }
   else
   {
-    if (!wm.autoConnect("PowerPotConfigAP", "password")) //TODO: Cambiar password por env var
+    if (!wm.autoConnect("PowerPotConfigAP", wm_ap_pass))
     {
       Serial.println("autoConnect() fallo y se llego al timeout");
       resetWifiConfig();
@@ -115,10 +116,11 @@ void wifiConfig(void)
 
   // Las credenciales MQTT solo deben sobreescribirse si se configuraron, pero si se obtubieron de SPIFFS no deben sobreescribirse
   // Si no se cargo la configuracion significa que se configuro esta vez y debemos guardar
-  if(!spiffsSetup)
+  if (!spiffsSetup)
   {
     strcpy(mqtt_user, text_mqtt_user.getValue());
     strcpy(mqtt_pass, text_mqtt_pass.getValue());
+    strcpy(esp32_id, text_esp32_id.getValue());
   }
 
   Serial.println("");
@@ -126,14 +128,19 @@ void wifiConfig(void)
   Serial.println(WiFi.SSID());
   Serial.print("Dirección IP: ");
   Serial.println(WiFi.localIP());
-  //---- TODO: Quitar cuando funcione bien ----
-  Serial.print("Usuario MQTT: ");
-  Serial.println(mqtt_user);
-  Serial.print("Contra MQTT: ");
-  Serial.println(mqtt_pass);
-  //---- TODO: Quitar cuando funcione bien ----
 
-  //Guardar las configuraciones en archivo para cuando se reinicie
+  // Solo se muestra si se está en modo debug, para pruebas locales, no usar en produccion
+  if (WIFI_DEBUG_MODE)
+  {
+    Serial.print("Usuario MQTT: ");
+    Serial.println(mqtt_user);
+    Serial.print("Contraseña MQTT: ");
+    Serial.println(mqtt_pass);
+    Serial.print("ESP32-ID: ");
+    Serial.println(esp32_id);
+  }
+
+  // Guardar las configuraciones en archivo para cuando se reinicie
   if (shouldSaveConfig)
   {
     saveConfigFile();
@@ -142,16 +149,6 @@ void wifiConfig(void)
   // Se apaga el LED para indicar que finalizó el modo configuracion
   digitalWrite(LED_ONBOARD, LOW);
 }
-
-/*void start_ota_webserver(void)
-{
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(200, "text/plain", "Bienvenido a ESP32 over-the-air (OTA). Para actualizar el firmware de su ESP32 agregue /update en la direccion del navegador."); });
-  // Inicia ElegantOTA
-  AsyncElegantOTA.begin(&server);
-  server.begin();
-  Serial.println("OTA Webserver server listo");
-}*/
 
 void callback(char *topic, byte *message, unsigned int length)
 {
@@ -249,7 +246,7 @@ void reconnect()
   while (!pubSubClient.connected())
   {
     Serial.print("Intentando conexion MQTT... ");
-    if (pubSubClient.connect(mqtt_client_id, mqtt_user, mqtt_pass))
+    if (pubSubClient.connect(esp32_id, mqtt_user, mqtt_pass))
     {
       Serial.println("Conectado a MQTT");
       pubSubClient.subscribe("esp32/output1");
@@ -259,12 +256,31 @@ void reconnect()
       pubSubClient.subscribe("esp32/output5");
       pubSubClient.subscribe("esp32/output6");
       pubSubClient.subscribe("esp32/output7");
+
+      mqtt_error_count = 0;
     }
     else
     {
-      Serial.print("Fallo, rc=");
+      /*Si ya pasaron muchas veces intentando conectarse a MQTT y sigue fallando reiniciamos la ESP32 sin borrar SPIFFS para probar reconectarse, 
+      por las dudas que sea un problema del servidor MQTT y no de las configuraciones de WiFi,
+      si al reiniciar sigue sin poder conectarse es porque se perdio la conexion a WiFi entonces se llegará al timeout y se borrarán las configs de SPIFFS
+      */
+      if(mqtt_error_count >= MAX_MQTT_ERRORS)
+      {
+        Serial.println("La conexion a MQTT falló demasiadas veces, reiniciando ESP32...");
+        delay(2000);
+        ESP.restart(); //Se reincia la placa sin eliminar las configuraciones guardadas
+      }
+      Serial.print("Error al conectar PubSubClient, state:");
       Serial.print(pubSubClient.state());
-      Serial.printf("// mqtt_user: %s // mqtt_pass: %s //", mqtt_user, mqtt_pass);
+      // Solo se muestra si se está en modo debug, para pruebas locales, no usar en produccion
+      if(WIFI_DEBUG_MODE)
+      {
+        Serial.printf("// mqtt_user: %s // mqtt_pass: %s // esp32_id: %s\n", mqtt_user, mqtt_pass, esp32_id);
+        Serial.printf("mqtt_error_count: %d\n", mqtt_error_count);
+      }
+      mqtt_error_count++;
+
       Serial.println(" Intentando de nuevo en 5 segundos...");
       delay(5000);
     }
@@ -291,13 +307,14 @@ double prome(uint8_t temp[], uint8_t N_filter)
  */
 void pushData(uint8_t *tempArray, uint8_t newTemp, uint8_t N_fil)
 {
-  // Corro el valor anterior en el arreglo per copio todo uno a la derecha, luego pongo el valor recibido en este en CERO como en mas actual
+  // Corro el valor anterior en el arreglo pero copio los "uno" a la derecha, luego pongo el valor recibido en este en CERO como en mas actual
   for (int i = (N_fil - 1); i > 0; i--)
   {
     tempArray[i] = tempArray[i - 1];
   }
   tempArray[0] = newTemp;
 }
+
 void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *topic, int min, int max)
 {
   float dato;
@@ -392,6 +409,7 @@ void saveConfigFile()
   // Se agregan las configuraciones que deben ser guardadas
   json["mqtt_user"] = mqtt_user;
   json["mqtt_pass"] = mqtt_pass;
+  json["esp32_id"] = esp32_id;
 
   // Se abre el archivo de configuracion
   File configFile = SPIFFS.open(JSON_CONFIG_FILE, FILE_WRITE);
@@ -400,8 +418,13 @@ void saveConfigFile()
     Serial.println("Fallo al abrir el archivo de configuracion en SPIFFS");
   }
 
+  // Solo se muestra si se está en modo debug, para pruebas locales, no usar en produccion
+  if (WIFI_DEBUG_MODE)
+  {
+    serializeJsonPretty(json, Serial);
+  }
+
   // Serializar JSON para escribirlo en el archivo
-  serializeJsonPretty(json, Serial);
   if (serializeJson(json, configFile) == 0)
   {
     Serial.println(F("Error al escribir en el archivo de configuracion en SPIFFS"));
@@ -429,8 +452,14 @@ bool loadConfigFile()
         Serial.println("Se abrio el archivo de configuraciones con exito");
         StaticJsonDocument<512> json;
         DeserializationError error = deserializeJson(json, configFile);
-        // Se muestra en el Serial Monitor el JSON
-        serializeJsonPretty(json, Serial); //TODO: Decidir si se debe ocultar esta info
+
+        // Solo se muestra si se está en modo debug, para pruebas locales, no usar en produccion
+        if (WIFI_DEBUG_MODE)
+        {
+          // Se muestra en el Serial Monitor el JSON
+          serializeJsonPretty(json, Serial);
+        }
+
         Serial.println("");
 
         if (!error)
@@ -438,6 +467,7 @@ bool loadConfigFile()
           Serial.println("Parsing JSON");
           strcpy(mqtt_user, json["mqtt_user"]);
           strcpy(mqtt_pass, json["mqtt_pass"]);
+          strcpy(esp32_id, json["esp32_id"]);
           return true;
         }
         else
@@ -460,15 +490,15 @@ void saveConfigCallback()
   Serial.println("Se guardaran las configuraciones en SPIFFS");
   shouldSaveConfig = true;
 }
- 
+
 // Callback que se ejecuta cuando se entra en modo configuracion
 void configModeCallback(WiFiManager *myWiFiManager)
 {
   Serial.println("Entrando en Modo Configuracion de WifiManager");
- 
+
   Serial.print("Config SSID: ");
   Serial.println(myWiFiManager->getConfigPortalSSID());
- 
+
   Serial.print("Config IP Address: ");
   Serial.println(WiFi.softAPIP());
 }
