@@ -84,7 +84,10 @@ void wifiConfig(void)
 
   // Se enciende el LED para indicar que se está en modo configuracion
   digitalWrite(LED_ONBOARD, HIGH);
-
+  if (wm_ap_pass == nullptr || wm_ap_pass[0] == '\0') 
+  {
+    Serial.println("WIFI MANAGER NO TIENE PASS DEFAULT");
+  }
   // Dependiendo si se fuerza la configuracion o se deja en autoconnect
   if (forceConfig)
   {
