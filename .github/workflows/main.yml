@@ -1,0 +1,116 @@
+name: Main
+
+on:
+  # Se activa este workflow automáticamente cada vez que se hace un Pull Request hacia la rama "main", que contenga cambios en src include o test
+  pull_request:
+    branches: [ "dev" ]
+    paths:
+      - 'src/*'
+      - 'include/*'
+      - 'test/*'
+
+  # Esta línea permite accionar el workflow manualmente desde GitHub Actions, muy útil para testear correrlo incluso en otras ramas
+  workflow_dispatch:
+
+env:
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+  SONAR_VERSION: "4.8.0.2856"
+# Dirección del servidor MQTT a conectarse
+  MQTT_SERV: ${{ vars.MQTT_SERV }}
+# Contraseña del Access Point que ofrece WifiManager para configurar las credenciales
+  WMAP_PASS: ${{ secrets.WMAP_PASS }}
+# Comando para leer la Versión del Firmware actualizada en el repositorio
+  VERSION: $(awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp)
+
+jobs:
+  analyze-codeql:
+    name: Analyze-CodeQL
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'cpp', 'python' ]
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: ${{ matrix.language }}
+    #This step runs only in the cpp workflow run
+    - if: matrix.language == 'cpp'
+      name: Build with PlatformIO
+      run: |
+        curl -fsSL -o get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
+        python3 get-platformio.py
+        /home/runner/.platformio/penv/bin/platformio run --environment nodemcu-32s
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+
+  sonarqube:
+    name: Sonarqube
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+      - name: "Download SonarQube Requirements"
+        run: |
+          pwd
+          mkdir -p sonarqube
+          cd sonarqube
+          wget --no-verbose https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
+          unzip -qq build-wrapper-linux-x86.zip
+          rm build-wrapper-linux-x86.zip
+          wget --no-verbose https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
+          unzip -qq sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
+          rm sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
+          mkdir -p output
+          cd ..
+          ./sonarqube/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ./sonarqube/output/ platformio run
+          ./sonarqube/sonar-scanner-${{ env.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=${{ env.SONAR_TOKEN }} -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
+
+  unit_tests:
+    name: Unit-Tests
+    runs-on: self-hosted    
+    steps:    
+      - uses: actions/checkout@v3
+      - name: "unit tests"
+        run: |
+          echo "Unit Tests"
+          pio test -vv
+
+  build:
+    name: Build-Upload
+    runs-on: self-hosted    
+    steps: 
+      - uses: actions/checkout@v3
+      - name: "Set firmware version"
+        run: |
+          echo "VERSION=${{ env.VERSION }}"
+      - name: "build firmware"
+        run: |
+          pio run --target upload --environment nodemcu-32s 
+      - name: "platformio check with cppcheck"
+        run: |
+          pio check --fail-on-defect=high
+          echo "Platformio Check finalizado"
+      - name: "set new version to update server"
+        run: |
+          cp .pio/build/nodemcu-32s/firmware.bin /home/runner/firmware/update/firmware-${{ env.VERSION }}.bin
+          echo "Firmware.bin compilado y copiado a /home/runner/firmware/update"
+          cp /home/runner/firmware/update/update.json update.json
+          jq --argjson version_arg ${{ env.VERSION }} '.version |= $version_arg | .version |= tonumber' update.json > tmp && mv tmp update.json
+          cp update.json /home/runner/firmware/update/update.json
+          echo "update.json actualizado con la ultima version: ${{ env.VERSION }}"
