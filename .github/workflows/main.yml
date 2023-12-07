@@ -16,14 +16,6 @@ on:
   workflow_dispatch:
 
 env:
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-  SONAR_VERSION: "5.0.1.3006"
-# Dirección del servidor MQTT a conectarse
-  MQTT_SERV: ${{ vars.MQTT_SERV }}
-  PROYECT_KEY: "SmartPlant"
-# Contraseña del Access Point que ofrece WifiManager para configurar las credenciales
-  WMAP_PASS: ${{ secrets.WMAP_PASS }}
 # Comando para leer la Versión del Firmware actualizada en el repositorio
   VERSION: $(awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp)
 
@@ -60,7 +52,7 @@ jobs:
   sonarqube:
     name: Sonarqube
     runs-on: ubuntu-latest
-    environment: env
+    environment: dev
     steps:
       - uses: actions/checkout@v3
         with:
@@ -78,13 +70,13 @@ jobs:
           wget --no-verbose https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -qq build-wrapper-linux-x86.zip
           rm build-wrapper-linux-x86.zip
-          wget --no-verbose https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
-          unzip -qq sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
-          rm sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
+          wget --no-verbose https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${{ vars.SONAR_VERSION }}-linux.zip
+          unzip -qq sonar-scanner-cli-${{ vars.SONAR_VERSION }}-linux.zip
+          rm sonar-scanner-cli-${{ vars.SONAR_VERSION }}-linux.zip
           mkdir -p output
           cd ..
           ./sonarqube/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ./sonarqube/output/ platformio run
-          ./sonarqube/sonar-scanner-${{ env.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.projectKey=${{ env.PROYECT_KEY }} -X
+          ./sonarqube/sonar-scanner-${{ vars.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.projectKey=${{ vars.PROYECT_KEY }} -X
   unit_tests:
     name: Unit-Tests
     runs-on: self-hosted    
@@ -98,7 +90,7 @@ jobs:
   build-upload-dev:
     name: Build-Upload
     runs-on: self-hosted   
-    if: github.event_name == 'pull_request' && github.base_ref == 'refs/heads/dev'
+    environment: dev
     steps: 
       - uses: actions/checkout@v3
       - name: "Set firmware version"
@@ -113,9 +105,9 @@ jobs:
           echo "Platformio Check finalizado"
       - name: "set new version to update server"
         run: |
-          cp .pio/build/nodemcu-32s/firmware.bin /home/runner/firmware/dev/update/firmware-${{ env.VERSION }}.bin
+          cp .pio/build/nodemcu-32s/firmware.bin /home/runner/firmware/${{ vars.PATH_ENV }}/update/firmware-${{ env.VERSION }}.bin
           echo "Firmware.bin compilado y copiado a /home/runner/firmware/update"
-          cp /home/runner/firmware/dev/update/update.json update.json
+          cp /home/runner/firmware/${{ vars.PATH_ENV }}/update/update.json update.json
           jq --argjson version_arg ${{ env.VERSION }} '.version |= $version_arg | .version |= tonumber' update.json > tmp && mv tmp update.json
-          cp update.json /home/runner/firmware/dev/update/update.json
+          cp update.json /home/runner/firmware/${{ vars.PATH_ENV }}/update/update.json
           echo "update.json actualizado con la ultima version: ${{ env.VERSION }}"
