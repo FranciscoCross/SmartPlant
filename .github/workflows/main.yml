@@ -19,6 +19,7 @@ env:
   SONAR_VERSION: "5.0.1.3006"
 # Dirección del servidor MQTT a conectarse
   MQTT_SERV: ${{ vars.MQTT_SERV }}
+  PROYECT_KEY: "SmartPlant"
 # Contraseña del Access Point que ofrece WifiManager para configurar las credenciales
   WMAP_PASS: ${{ secrets.WMAP_PASS }}
 # Comando para leer la Versión del Firmware actualizada en el repositorio
@@ -87,9 +88,7 @@ jobs:
           mkdir -p output
           cd ..
           ./sonarqube/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ./sonarqube/output/ platformio run
-          echo ${{ secrets.SONAR_TOKEN }}
-          echo ${{ secrets.SONAR_HOST_URL }}
-          ./sonarqube/sonar-scanner-${{ env.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
+          ./sonarqube/sonar-scanner-${{ env.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.projectKey=${{ env.PROYECT_KEY }} -X
   unit_tests:
     name: Unit-Tests
     runs-on: self-hosted    
