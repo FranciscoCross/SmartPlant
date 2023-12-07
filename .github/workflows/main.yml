@@ -97,7 +97,7 @@ jobs:
   build-upload-dev:
     name: Build-Upload
     runs-on: self-hosted   
-    if: github.ref == 'refs/heads/dev' 
+    if: github.event_name == 'pull_request' && github.base_ref == 'refs/heads/dev'
     steps: 
       - uses: actions/checkout@v3
       - name: "Set firmware version"
