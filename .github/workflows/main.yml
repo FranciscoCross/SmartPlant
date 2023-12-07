@@ -8,6 +8,7 @@ on:
       - 'src/*'
       - 'include/*'
       - 'test/*'
+      - '.github/*'
 
   # Esta línea permite accionar el workflow manualmente desde GitHub Actions, muy útil para testear correrlo incluso en otras ramas
   workflow_dispatch:
