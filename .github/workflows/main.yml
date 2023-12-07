@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 env:
-  SONAR_VERSION: "4.8.0.2856"
+  SONAR_VERSION: "5.0.1.3006"
 # Dirección del servidor MQTT a conectarse
   MQTT_SERV: ${{ vars.MQTT_SERV }}
 # Contraseña del Access Point que ofrece WifiManager para configurar las credenciales
