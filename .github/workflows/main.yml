@@ -17,7 +17,7 @@ on:
 
 env:
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
   SONAR_VERSION: "4.8.0.2856"
 # Dirección del servidor MQTT a conectarse
   MQTT_SERV: ${{ vars.MQTT_SERV }}
