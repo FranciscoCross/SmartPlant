@@ -16,6 +16,8 @@ on:
   workflow_dispatch:
 
 env:
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
   SONAR_VERSION: "5.0.1.3006"
 # Dirección del servidor MQTT a conectarse
   MQTT_SERV: ${{ vars.MQTT_SERV }}
@@ -61,14 +63,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-#      - uses: sonarsource/sonarqube-scan-action@master
-      # If you wish to fail your job when the Quality Gate is red, uncomment the
-      # following lines. This would typically be used to fail a deployment.
-      # - uses: sonarsource/sonarqube-quality-gate-action@master
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          fetch-depth: 0  
       - uses: actions/setup-python@v4
         with:
           python-version: '3.9'
@@ -88,7 +83,7 @@ jobs:
           mkdir -p output
           cd ..
           ./sonarqube/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ./sonarqube/output/ platformio run
-          ./sonarqube/sonar-scanner-${{ env.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=sqp_5c0e9c6e7fcd4846dee9242663edf1738b9c3632 -Dsonar.host.url=https://sonarqube.power-pot.com -Dsonar.projectKey=${{ env.PROYECT_KEY }} -X
+          ./sonarqube/sonar-scanner-${{ env.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=${{ env.SONAR_TOKEN }} -Dsonar.host.url=${{ env.SONAR_HOST_URL }} -Dsonar.projectKey=${{ env.PROYECT_KEY }} -X
   unit_tests:
     name: Unit-Tests
     runs-on: self-hosted    
