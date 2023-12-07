@@ -87,6 +87,8 @@ jobs:
           mkdir -p output
           cd ..
           ./sonarqube/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ./sonarqube/output/ platformio run
+          echo ${{ secrets.SONAR_TOKEN }}
+          echo ${{ secrets.SONAR_HOST_URL }}
           ./sonarqube/sonar-scanner-${{ env.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
   unit_tests:
     name: Unit-Tests
