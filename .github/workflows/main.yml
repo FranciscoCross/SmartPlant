@@ -1,14 +1,16 @@
 name: Main
 ## Workflow for enviroments
 on:
-  # Se activa este workflow automáticamente cada vez que se hace un Pull Request hacia la rama "main", que contenga cambios en src include o test
+  push:
+    branches:
+      - dev
+      - qa
+      - main
   pull_request:
-    branches: [ "dev" ]
-    paths:
-      - 'src/*'
-      - 'include/*'
-      - 'test/*'
-      - '.github/*'
+    branches:
+      - dev
+      - qa
+      - main
 
   # Esta línea permite accionar el workflow manualmente desde GitHub Actions, muy útil para testear correrlo incluso en otras ramas
   workflow_dispatch:
