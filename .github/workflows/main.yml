@@ -88,7 +88,7 @@ jobs:
           mkdir -p output
           cd ..
           ./sonarqube/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ./sonarqube/output/ platformio run
-          ./sonarqube/sonar-scanner-${{ env.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.projectKey=${{ env.PROYECT_KEY }} -X
+          ./sonarqube/sonar-scanner-${{ env.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=sqp_5c0e9c6e7fcd4846dee9242663edf1738b9c3632 -Dsonar.host.url=https://sonarqube.power-pot.com -Dsonar.projectKey=${{ env.PROYECT_KEY }} -X
   unit_tests:
     name: Unit-Tests
     runs-on: self-hosted    
