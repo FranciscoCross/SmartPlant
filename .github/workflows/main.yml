@@ -108,7 +108,7 @@ jobs:
         run: |
           cp .pio/build/nodemcu-32s/firmware.bin /home/runner/${{ vars.PATH_ENV }}/firmware/update/firmware-${{ env.VERSION }}.bin
           echo "Firmware.bin compilado y copiado a /home/runner/${{ vars.PATH_ENV }}/firmware/update"
-          cp /home/runner/firmware/${{ vars.PATH_ENV }}/update/update.json update.json
+          cp /home/runner/${{ vars.PATH_ENV }}/firmware/update/update.json update.json
           jq --argjson version_arg ${{ env.VERSION }} '.version |= $version_arg | .version |= tonumber' update.json > tmp && mv tmp update.json
-          cp update.json /home/runner/firmware/${{ vars.PATH_ENV }}/update/update.json
+          cp update.json /home/runner/${{ vars.PATH_ENV }}/firmware/update/update.json
           echo "update.json actualizado con la ultima version: ${{ env.VERSION }}"
