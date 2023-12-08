@@ -16,7 +16,7 @@ env:
   VERSION: $(awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp)
 
 jobs:
-  build-upload-dev:
+  build-upload-prd:
     name: Build-Upload
     runs-on: self-hosted   
     environment: main
