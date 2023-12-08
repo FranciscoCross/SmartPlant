@@ -21,6 +21,7 @@ jobs:
   analyze-codeql:
     name: Analyze-CodeQL
     runs-on: ubuntu-latest
+    environment: ${{ github.ref_name }}
     permissions:
       actions: read
       contents: read
@@ -43,7 +44,7 @@ jobs:
       run: |
         curl -fsSL -o get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
         python3 get-platformio.py
-        /home/runner/.platformio/penv/bin/platformio run --environment nodemcu-32s
+        /home/runner/.platformio/penv/bin/platformio run --environment nodemcu-32s-{{ vars.env }} 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
 
