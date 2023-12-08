@@ -44,7 +44,7 @@ jobs:
       run: |
         curl -fsSL -o get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
         python3 get-platformio.py
-        /home/runner/.platformio/penv/bin/platformio run --environment nodemcu-32s-{{ vars.env }} 
+        /home/runner/.platformio/penv/bin/platformio run --environment nodemcu-32s-${{ vars.env }} 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
 
@@ -110,7 +110,7 @@ jobs:
           echo "VERSION=${{ env.VERSION }}"
       - name: "Build firmware"
         run: |
-          pio run --target upload --environment nodemcu-32s-{{ vars.env }} 
+          pio run --target upload --environment nodemcu-32s-${{ vars.env }} 
       - name: "Set new version to update server"
         run: |
           echo "Set URL Firmware ${{ vars.UPDATE_JSON_URL}}"
