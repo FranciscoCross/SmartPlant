@@ -29,8 +29,6 @@ extern WiFiClientSecure wifiSecureClient;
 extern PubSubClient pubSubClient;
 extern WiFiManager wm;
 
-extern const char *mqtt_server;
-
 extern long lastMsg;
 extern char msg[50];
 extern int value;

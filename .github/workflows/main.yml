@@ -86,10 +86,18 @@ jobs:
         run: |
           echo "Unit Tests"
           pio test -vv
+  cpp_check:
+    name: cpp_check
+    runs-on: self-hosted    
+    steps:    
+      - name: "platformio check with cppcheck"
+        run: |
+          pio check --fail-on-defect=high
+          echo "Platformio Check finalizado"
 
   build-upload-dev:
     name: Build-Upload
-    needs: [ unit_tests, sonarqube, analyze-codeql ]
+    needs: [ unit_tests, sonarqube, cpp_check, analyze-codeql ]
     runs-on: self-hosted   
     environment: dev
     steps: 
@@ -97,15 +105,12 @@ jobs:
       - name: "Set firmware version"
         run: |
           echo "VERSION=${{ env.VERSION }}"
-      - name: "build firmware"
+      - name: "Build firmware"
         run: |
           pio run --target upload --environment nodemcu-32s 
-      - name: "platformio check with cppcheck"
+      - name: "Set new version to update server"
         run: |
-          pio check --fail-on-defect=high
-          echo "Platformio Check finalizado"
-      - name: "set new version to update server"
-        run: |
+          echo "Set URL Firmware ${{ vars.UPDATE_JSON_URL}}"
           cp .pio/build/nodemcu-32s/firmware.bin /home/runner/${{ vars.PATH_ENV }}/firmware/update/firmware-${{ env.VERSION }}.bin
           echo "Firmware.bin compilado y copiado a /home/runner/${{ vars.PATH_ENV }}/firmware/update"
           cp /home/runner/${{ vars.PATH_ENV }}/firmware/update/update.json update.json

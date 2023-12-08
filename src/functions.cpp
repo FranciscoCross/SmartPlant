@@ -12,10 +12,6 @@ char mqtt_user[MAX_CREDENTIALS_LEN];
 char mqtt_pass[MAX_CREDENTIALS_LEN];
 char esp32_id[MAX_CREDENTIALS_LEN];
 
-// Dirección IP del BROKER MQTT, obtenida por variable de entorno, ver platformio.ini
-const char *mqtt_server = MQTT_SERV;
-// Contraseña del Access Point que ofrece WifiManager para configurar las credenciales
-const char *wm_ap_pass = WMAP_PASS;
 
 long lastMsg = 0;
 int value = 0;
@@ -84,14 +80,10 @@ void wifiConfig(void)
 
   // Se enciende el LED para indicar que se está en modo configuracion
   digitalWrite(LED_ONBOARD, HIGH);
-  if (wm_ap_pass == nullptr || wm_ap_pass[0] == '\0') 
-  {
-    Serial.println("WIFI MANAGER NO TIENE PASS DEFAULT");
-  }
   // Dependiendo si se fuerza la configuracion o se deja en autoconnect
   if (forceConfig)
   {
-    if (!wm.startConfigPortal("PowerPotConfigAP", wm_ap_pass))
+    if (!wm.startConfigPortal("PowerPotConfigAP", AP_PASS))
     {
       Serial.println("startConfigPortal() fallo y se llego al timeout");
       resetWifiConfig();
@@ -103,7 +95,7 @@ void wifiConfig(void)
   }
   else
   {
-    if (!wm.autoConnect("PowerPotConfigAP", wm_ap_pass))
+    if (!wm.autoConnect("PowerPotConfigAP", AP_PASS))
     {
       Serial.println("autoConnect() fallo y se llego al timeout");
       resetWifiConfig();
@@ -336,7 +328,7 @@ void checkFirmwareUpdate(void)
   Serial.println("Buscando actualizaciones de Firmware...");
 
   HTTPClient http;
-  http.begin(wifiSecureClient, UPDATE_JSON_URL);
+    http.begin(wifiSecureClient, UPDATE_JSON_URL);
 
   int httpResponseCode = http.GET();
   if (httpResponseCode == HTTP_CODE_OK)
