@@ -1,13 +1,11 @@
-name: Main
+name: qa
 ## Workflow for enviroments
 on:
   push:
     branches:
-      - dev
       - qa
   pull_request:
     branches:
-      - dev
       - qa
 
   # Esta línea permite accionar el workflow manualmente desde GitHub Actions, muy útil para testear correrlo incluso en otras ramas
@@ -21,7 +19,7 @@ jobs:
   analyze-codeql:
     name: Analyze-CodeQL
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name }}
+    environment: qa
     permissions:
       actions: read
       contents: read
@@ -98,11 +96,11 @@ jobs:
           pio check --fail-on-defect=high
           echo "Platformio Check finalizado"
 
-  build-upload-dev:
+  build-upload-qa:
     name: Build-Upload
     needs: [ unit_tests, sonarqube, cpp_check, analyze-codeql ]
     runs-on: self-hosted   
-    environment: ${{ github.ref_name }}
+    environment: qa
     steps: 
       - uses: actions/checkout@v3
       - name: "Set firmware version"
