@@ -104,7 +104,7 @@ jobs:
       - name: "Set new version to update server"
         run: |
           echo "Set URL Firmware ${{ vars.UPDATE_JSON_URL}}"
-          cp .pio/build/nodemcu-32s/firmware.bin /home/runner/${{ vars.PATH_ENV }}/firmware/update/firmware-${{ env.VERSION }}.bin
+          cp .pio/build/nodemcu-32s-${{ vars.ENV }}/firmware.bin /home/runner/${{ vars.PATH_ENV }}/firmware/update/firmware-${{ env.VERSION }}.bin
           echo "Firmware.bin compilado y copiado a /home/runner/${{ vars.PATH_ENV }}/firmware/update"
           cp /home/runner/${{ vars.PATH_ENV }}/firmware/update/update.json update.json
           jq --argjson version_arg ${{ env.VERSION }} '.version |= $version_arg | .version |= tonumber' update.json > tmp && mv tmp update.json
