@@ -43,7 +43,7 @@ void setup()
   Serial.begin(115200);
   
   wifiConfig();
-  pubSubClient.setServer(mqtt_server, MQTT_PORT);
+  pubSubClient.setServer(MQTT_SERV, MQTT_PORT);
   pubSubClient.setCallback(callback);
 
   Serial.println("Iniciando Tests...");
