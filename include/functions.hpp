@@ -29,8 +29,6 @@ extern WiFiClientSecure wifiSecureClient;
 extern PubSubClient pubSubClient;
 extern WiFiManager wm;
 
-extern const char *mqtt_server;
-
 extern long lastMsg;
 extern char msg[50];
 extern int value;
@@ -66,5 +64,6 @@ void saveConfigFile(void);
 bool loadConfigFile(void);
 void saveConfigCallback(void);
 void configModeCallback(WiFiManager *myWiFiManager);
+void initConfig();
 void resetWifiConfig(void);
 #endif
