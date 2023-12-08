@@ -27,7 +27,7 @@ jobs:
           echo "VERSION=${{ env.VERSION }}"
       - name: "Build firmware"
         run: |
-          pio run --target upload --environment nodemcu-32s-${{ vars.ENV }} 
+          pio run --environment nodemcu-32s-${{ vars.ENV }} 
       - name: "Set new version to update server"
         run: |
           echo "Set URL Firmware ${{ vars.UPDATE_JSON_URL}}"
