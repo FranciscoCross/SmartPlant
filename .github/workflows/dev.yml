@@ -1,26 +1,17 @@
-name: Main
-
+name: dev
+## Workflow for enviroments
 on:
-  # Se activa este workflow automáticamente cada vez que se hace un Pull Request hacia la rama "main", que contenga cambios en src include o test
+  push:
+    branches:
+      - dev
   pull_request:
-    branches: [ "dev" ]
-    paths:
-      - 'src/*'
-      - 'include/*'
-      - 'test/*'
-      - '.github/*'
+    branches:
+      - dev
 
   # Esta línea permite accionar el workflow manualmente desde GitHub Actions, muy útil para testear correrlo incluso en otras ramas
   workflow_dispatch:
 
 env:
-  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
-  SONAR_VERSION: "4.8.0.2856"
-# Dirección del servidor MQTT a conectarse
-  MQTT_SERV: ${{ vars.MQTT_SERV }}
-# Contraseña del Access Point que ofrece WifiManager para configurar las credenciales
-  WMAP_PASS: ${{ secrets.WMAP_PASS }}
 # Comando para leer la Versión del Firmware actualizada en el repositorio
   VERSION: $(awk '/#define FIRMWARE_VERSION/ {print $NF}' ./include/param.hpp)
 
@@ -28,6 +19,7 @@ jobs:
   analyze-codeql:
     name: Analyze-CodeQL
     runs-on: ubuntu-latest
+    environment: dev
     permissions:
       actions: read
       contents: read
@@ -50,13 +42,14 @@ jobs:
       run: |
         curl -fsSL -o get-platformio.py https://raw.githubusercontent.com/platformio/platformio-core-installer/master/get-platformio.py
         python3 get-platformio.py
-        /home/runner/.platformio/penv/bin/platformio run --environment nodemcu-32s
+        /home/runner/.platformio/penv/bin/platformio run --environment nodemcu-32s-${{ vars.ENV }} 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
 
   sonarqube:
     name: Sonarqube
     runs-on: ubuntu-latest
+    environment: dev
     steps:
       - uses: actions/checkout@v3
         with:
@@ -74,14 +67,13 @@ jobs:
           wget --no-verbose https://sonarcloud.io/static/cpp/build-wrapper-linux-x86.zip
           unzip -qq build-wrapper-linux-x86.zip
           rm build-wrapper-linux-x86.zip
-          wget --no-verbose https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
-          unzip -qq sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
-          rm sonar-scanner-cli-${{ env.SONAR_VERSION }}-linux.zip
+          wget --no-verbose https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${{ vars.SONAR_VERSION }}-linux.zip
+          unzip -qq sonar-scanner-cli-${{ vars.SONAR_VERSION }}-linux.zip
+          rm sonar-scanner-cli-${{ vars.SONAR_VERSION }}-linux.zip
           mkdir -p output
           cd ..
           ./sonarqube/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ./sonarqube/output/ platformio run
-          ./sonarqube/sonar-scanner-${{ env.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=${{ env.SONAR_TOKEN }} -Dsonar.host.url=${{ env.SONAR_HOST_URL }}
-
+          ./sonarqube/sonar-scanner-${{ vars.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.projectKey=${{ vars.PROYECT_KEY }} -X
   unit_tests:
     name: Unit-Tests
     runs-on: self-hosted    
@@ -90,28 +82,39 @@ jobs:
       - name: "unit tests"
         run: |
           echo "Unit Tests"
-          pio test -vv
-
-  build:
-    name: Build-Upload
+          pio test --environment nodemcu-32s-dev -vv
+  cpp_check:
+    name: cpp_check
     runs-on: self-hosted    
+    steps:    
+      - name: "platformio Init"
+        run: |
+          platformio project init
+          echo "Platformio Init finalizado"
+      - name: "platformio check with cppcheck"
+        run: |
+          pio check --fail-on-defect=high
+          echo "Platformio Check finalizado"
+
+  build-upload-dev:
+    name: Build-Upload
+    needs: [ unit_tests, sonarqube, cpp_check, analyze-codeql ]
+    runs-on: self-hosted   
+    environment: dev
     steps: 
       - uses: actions/checkout@v3
       - name: "Set firmware version"
         run: |
           echo "VERSION=${{ env.VERSION }}"
-      - name: "build firmware"
+      - name: "Build firmware"
         run: |
-          pio run --target upload --environment nodemcu-32s 
-      - name: "platformio check with cppcheck"
+          pio run --target upload --environment nodemcu-32s-${{ vars.ENV }} 
+      - name: "Set new version to update server"
         run: |
-          pio check --fail-on-defect=high
-          echo "Platformio Check finalizado"
-      - name: "set new version to update server"
-        run: |
-          cp .pio/build/nodemcu-32s/firmware.bin /home/runner/firmware/update/firmware-${{ env.VERSION }}.bin
-          echo "Firmware.bin compilado y copiado a /home/runner/firmware/update"
-          cp /home/runner/firmware/update/update.json update.json
+          echo "Set URL Firmware ${{ vars.UPDATE_JSON_URL}}"
+          cp .pio/build/nodemcu-32s-${{ vars.ENV }}/firmware.bin /home/runner/${{ vars.PATH_ENV }}/firmware/update/firmware-${{ env.VERSION }}.bin
+          echo "Firmware.bin compilado y copiado a /home/runner/${{ vars.PATH_ENV }}/firmware/update"
+          cp /home/runner/${{ vars.PATH_ENV }}/firmware/update/update.json update.json
           jq --argjson version_arg ${{ env.VERSION }} '.version |= $version_arg | .version |= tonumber' update.json > tmp && mv tmp update.json
-          cp update.json /home/runner/firmware/update/update.json
+          cp update.json /home/runner/${{ vars.PATH_ENV }}/firmware/update/update.json
           echo "update.json actualizado con la ultima version: ${{ env.VERSION }}"
