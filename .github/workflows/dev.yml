@@ -1,9 +1,6 @@
 name: dev
 ## Workflow for enviroments
 on:
-  push:
-    branches:
-      - dev
   pull_request:
     branches:
       - dev

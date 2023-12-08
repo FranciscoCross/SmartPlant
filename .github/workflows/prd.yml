@@ -1,9 +1,6 @@
 name: Main
 ## Workflow for enviroments
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
