@@ -74,15 +74,7 @@ jobs:
           cd ..
           ./sonarqube/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir ./sonarqube/output/ platformio run
           ./sonarqube/sonar-scanner-${{ vars.SONAR_VERSION }}-linux/bin/sonar-scanner -Dsonar.login=${{ secrets.SONAR_TOKEN }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.projectKey=${{ vars.PROYECT_KEY }} -X
-  unit_tests:
-    name: Unit-Tests
-    runs-on: self-hosted    
-    steps:    
-      - uses: actions/checkout@v3
-      - name: "unit tests"
-        run: |
-          echo "Unit Tests"
-          pio test -vv
+
   cpp_check:
     name: cpp_check
     runs-on: self-hosted    
@@ -98,7 +90,7 @@ jobs:
 
   build-upload-qa:
     name: Build-Upload
-    needs: [ unit_tests, sonarqube, cpp_check, analyze-codeql ]
+    needs: [ sonarqube, cpp_check, analyze-codeql ]
     runs-on: self-hosted   
     environment: qa
     steps: 

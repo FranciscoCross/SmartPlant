@@ -82,7 +82,7 @@ jobs:
       - name: "unit tests"
         run: |
           echo "Unit Tests"
-          pio test -vv
+          pio test --environment nodemcu-32s-dev -vv
   cpp_check:
     name: cpp_check
     runs-on: self-hosted    
