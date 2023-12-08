@@ -1,5 +1,6 @@
 #include "functions.hpp"
 #include "param.hpp"
+#include "certificate.hpp"
 
 // AsyncWebServer server(80);
 WiFiClient wifi;
@@ -11,11 +12,6 @@ WiFiManager wm;
 char mqtt_user[MAX_CREDENTIALS_LEN];
 char mqtt_pass[MAX_CREDENTIALS_LEN];
 char esp32_id[MAX_CREDENTIALS_LEN];
-
-// Dirección IP del BROKER MQTT, obtenida por variable de entorno, ver platformio.ini
-const char *mqtt_server = MQTT_SERV;
-// Contraseña del Access Point que ofrece WifiManager para configurar las credenciales
-const char *wm_ap_pass = WMAP_PASS;
 
 long lastMsg = 0;
 int value = 0;
@@ -49,7 +45,15 @@ void wifiConfig(void)
 
   // Eliminar la configuracion guardada de WiFiManager
   // wm.resetSettings();
-
+  Serial.println();
+  Serial.println("Valores definidos:");
+  Serial.print("AP_PASS: ");
+  Serial.println(AP_PASS);
+  Serial.print("MQTT_SERV: " );
+  Serial.println(MQTT_SERV);
+  Serial.print("UPDATE_JSON_URL: ");
+  Serial.println(UPDATE_JSON_URL);
+  Serial.println();
   // WifiManager Debug Info en Serial Monitor
   wm.setDebugOutput(true);
 
@@ -84,14 +88,10 @@ void wifiConfig(void)
 
   // Se enciende el LED para indicar que se está en modo configuracion
   digitalWrite(LED_ONBOARD, HIGH);
-  if (wm_ap_pass == nullptr || wm_ap_pass[0] == '\0') 
-  {
-    Serial.println("WIFI MANAGER NO TIENE PASS DEFAULT");
-  }
   // Dependiendo si se fuerza la configuracion o se deja en autoconnect
   if (forceConfig)
   {
-    if (!wm.startConfigPortal("PowerPotConfigAP", wm_ap_pass))
+    if (!wm.startConfigPortal("PowerPotConfigAP", AP_PASS))
     {
       Serial.println("startConfigPortal() fallo y se llego al timeout");
       resetWifiConfig();
@@ -103,7 +103,7 @@ void wifiConfig(void)
   }
   else
   {
-    if (!wm.autoConnect("PowerPotConfigAP", wm_ap_pass))
+    if (!wm.autoConnect("PowerPotConfigAP", AP_PASS))
     {
       Serial.println("autoConnect() fallo y se llego al timeout");
       resetWifiConfig();
@@ -334,9 +334,9 @@ void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *
 void checkFirmwareUpdate(void)
 {
   Serial.println("Buscando actualizaciones de Firmware...");
-
+  Serial.print(UPDATE_JSON_URL);
   HTTPClient http;
-  http.begin(wifiSecureClient, UPDATE_JSON_URL);
+    http.begin(wifiSecureClient, UPDATE_JSON_URL);
 
   int httpResponseCode = http.GET();
   if (httpResponseCode == HTTP_CODE_OK)
@@ -501,6 +501,17 @@ void configModeCallback(WiFiManager *myWiFiManager)
 
   Serial.print("Config IP Address: ");
   Serial.println(WiFi.softAPIP());
+}
+
+void initConfig()
+{
+  wifiSecureClient.setCACert(SERVER_CERTIFICATE);  
+  pubSubClient.setServer(MQTT_SERV, MQTT_PORT);
+  pubSubClient.setCallback(callback);
+  Serial.printf("\nBienvenido a Power Pot\n");
+  Serial.printf("VERSION = %.2f\n", FIRMWARE_VERSION);
+  ledcSetup(PWM_LED_CHANNEL, PWM_FREQ, PWM_RESOLUTION);
+  ledcAttachPin(PWM_LED, PWM_LED_CHANNEL);
 }
 
 void resetWifiConfig()

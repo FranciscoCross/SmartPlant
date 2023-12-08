@@ -43,11 +43,7 @@ void setup()
   Serial.begin(115200);
   
   wifiConfig();
-  if (mqtt_server == nullptr || mqtt_server[0] == '\0') 
-  {
-    mqtt_server = "mqtt.power-pot.com"; // Asigna directamente el valor predeterminado aquí
-  }
-  pubSubClient.setServer(mqtt_server, MQTT_PORT);
+  pubSubClient.setServer(MQTT_SERV, MQTT_PORT);
   pubSubClient.setCallback(callback);
 
   Serial.println("Iniciando Tests...");

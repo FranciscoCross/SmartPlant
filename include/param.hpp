@@ -5,13 +5,18 @@ param.hpp: se configuran los parámetros del dispositivo
 #define param_hpp
 
 // Version del Firmware
-#define FIRMWARE_VERSION 0.56
+#define FIRMWARE_VERSION 0.57
 
 // Actualizaciones de Firmware con autoupdate
-#define UPDATE_JSON_URL "https://firmware.power-pot.com/update/update.json"
+#define UPDATE_JSON_URL_DEV "https://firmware-dev.power-pot.com/update/update.json"
+#define UPDATE_JSON_URL_QA "https://firmware-qa.power-pot.com/update/update.json"
+#define UPDATE_JSON_URL_PRD "https://firmware.power-pot.com/update/update.json"
+
+#define AP_PASS "12344321"
+#define MQTT_SERV "mqtt.power-pot.com"
 
 // Cantidad de veces que se ejecuta el bucle principal para comprobar actualizaciones de firmware
-#define N_LOOPS_CHECK_FIRMWARE_UPDATE 120
+#define N_LOOPS_CHECK_FIRMWARE_UPDATE 10
 
 // Tiempo en ms para esperar antes de cambiar el estado del LED
 #define DELAY 200
