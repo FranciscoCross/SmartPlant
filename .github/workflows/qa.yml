@@ -1,9 +1,6 @@
 name: qa
 ## Workflow for enviroments
 on:
-  push:
-    branches:
-      - qa
   pull_request:
     branches:
       - qa
