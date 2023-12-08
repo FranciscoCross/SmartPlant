@@ -1,5 +1,6 @@
 #include "functions.hpp"
 #include "param.hpp"
+#include "certificate.hpp"
 
 // AsyncWebServer server(80);
 WiFiClient wifi;
@@ -11,7 +12,6 @@ WiFiManager wm;
 char mqtt_user[MAX_CREDENTIALS_LEN];
 char mqtt_pass[MAX_CREDENTIALS_LEN];
 char esp32_id[MAX_CREDENTIALS_LEN];
-
 
 long lastMsg = 0;
 int value = 0;
@@ -45,7 +45,15 @@ void wifiConfig(void)
 
   // Eliminar la configuracion guardada de WiFiManager
   // wm.resetSettings();
-
+  Serial.println();
+  Serial.println("Valores definidos:");
+  Serial.print("AP_PASS: ");
+  Serial.println(AP_PASS);
+  Serial.print("MQTT_SERV: " );
+  Serial.println(MQTT_SERV);
+  Serial.print("UPDATE_JSON_URL: ");
+  Serial.println(UPDATE_JSON_URL);
+  Serial.println();
   // WifiManager Debug Info en Serial Monitor
   wm.setDebugOutput(true);
 
@@ -326,7 +334,7 @@ void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *
 void checkFirmwareUpdate(void)
 {
   Serial.println("Buscando actualizaciones de Firmware...");
-
+  Serial.print(UPDATE_JSON_URL);
   HTTPClient http;
     http.begin(wifiSecureClient, UPDATE_JSON_URL);
 
@@ -493,6 +501,17 @@ void configModeCallback(WiFiManager *myWiFiManager)
 
   Serial.print("Config IP Address: ");
   Serial.println(WiFi.softAPIP());
+}
+
+void initConfig()
+{
+  wifiSecureClient.setCACert(SERVER_CERTIFICATE);  
+  pubSubClient.setServer(MQTT_SERV, MQTT_PORT);
+  pubSubClient.setCallback(callback);
+  Serial.printf("\nBienvenido a Power Pot\n");
+  Serial.printf("VERSION = %.2f\n", FIRMWARE_VERSION);
+  ledcSetup(PWM_LED_CHANNEL, PWM_FREQ, PWM_RESOLUTION);
+  ledcAttachPin(PWM_LED, PWM_LED_CHANNEL);
 }
 
 void resetWifiConfig()

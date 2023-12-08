@@ -8,7 +8,10 @@ param.hpp: se configuran los parámetros del dispositivo
 #define FIRMWARE_VERSION 0.57
 
 // Actualizaciones de Firmware con autoupdate
-#define UPDATE_JSON_URL "https://firmware.power-pot.com/update/update.json"
+#define UPDATE_JSON_URL_DEV "https://firmware-dev.power-pot.com/update/update.json"
+#define UPDATE_JSON_URL_QA "https://firmware-qa.power-pot.com/update/update.json"
+#define UPDATE_JSON_URL_PRD "https://firmware.power-pot.com/update/update.json"
+
 #define AP_PASS "12344321"
 #define MQTT_SERV "mqtt.power-pot.com"
 

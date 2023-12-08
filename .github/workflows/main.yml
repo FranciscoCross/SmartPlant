@@ -5,12 +5,10 @@ on:
     branches:
       - dev
       - qa
-      - main
   pull_request:
     branches:
       - dev
       - qa
-      - main
 
   # Esta línea permite accionar el workflow manualmente desde GitHub Actions, muy útil para testear correrlo incluso en otras ramas
   workflow_dispatch:
@@ -103,7 +101,7 @@ jobs:
     name: Build-Upload
     needs: [ unit_tests, sonarqube, cpp_check, analyze-codeql ]
     runs-on: self-hosted   
-    environment: dev
+    environment: ${{ github.ref_name }}
     steps: 
       - uses: actions/checkout@v3
       - name: "Set firmware version"
@@ -111,7 +109,7 @@ jobs:
           echo "VERSION=${{ env.VERSION }}"
       - name: "Build firmware"
         run: |
-          pio run --target upload --environment nodemcu-32s 
+          pio run --target upload --environment nodemcu-32s-{{ vars.env }} 
       - name: "Set new version to update server"
         run: |
           echo "Set URL Firmware ${{ vars.UPDATE_JSON_URL}}"
