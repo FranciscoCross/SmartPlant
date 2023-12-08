@@ -90,6 +90,10 @@ jobs:
     name: cpp_check
     runs-on: self-hosted    
     steps:    
+      - name: "platformio Init"
+        run: |
+          platformio project init
+          echo "Platformio Init finalizado"
       - name: "platformio check with cppcheck"
         run: |
           pio check --fail-on-defect=high
