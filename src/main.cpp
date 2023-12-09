@@ -2,7 +2,6 @@
 #include "functions.hpp"
 
 DHT dht(DHTPIN, DHTTYPE);
-
 //-----------------Arduino-Setup-y-Loop-------------------------//
 void setup(void)
 {
@@ -46,6 +45,9 @@ void setup(void)
        temperature = dht.readTemperature();
        dtostrf(temperature, 1, 2, tempString);
        pubSubClient.publish(TOPIC_TEMPERATURA, tempString);
+       char versionStr[8]; // Arreglo de caracteres para almacenar la versión como string
+       snprintf(versionStr, sizeof(versionStr), "%.2f", FIRMWARE_VERSION); // Convertir el valor definido a string con dos decimales
+       pubSubClient.publish(TOPIC_VERSION, versionStr); // Publicar la versión como string
        //Alternar el estado del LED para indicar una vuelta del loop
        digitalWrite(LED_ONBOARD, !digitalRead(LED_ONBOARD)); 
      }
