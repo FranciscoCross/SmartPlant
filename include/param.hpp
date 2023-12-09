@@ -5,7 +5,7 @@ param.hpp: se configuran los parámetros del dispositivo
 #define param_hpp
 
 // Version del Firmware
-#define FIRMWARE_VERSION 0.58
+#define FIRMWARE_VERSION 0.59
 
 // Actualizaciones de Firmware con autoupdate
 #define UPDATE_JSON_URL_DEV "https://firmware-dev.power-pot.com/update/update.json"
@@ -38,18 +38,21 @@ param.hpp: se configuran los parámetros del dispositivo
 #define TOPIC_HUME_SUELO_DEV "esp32-dev/humedadSuelo"
 #define TOPIC_HUME_AIRE_DEV "esp32-dev/humidity"
 #define TOPIC_TEMPERATURA_DEV "esp32-dev/temperature"
+#define TOPIC_VERSION_DEV "esp32-dev/version"
 
 // Topicos MQTT-dev
 #define TOPIC_LUZ_QA "esp32-qa/nivelLuz"
 #define TOPIC_HUME_SUELO_QA "esp32-qa/humedadSuelo"
 #define TOPIC_HUME_AIRE_QA "esp32-qa/humidity"
 #define TOPIC_TEMPERATURA_QA "esp32-qa/temperature"
+#define TOPIC_VERSION_QA "esp32-dev/version"
 
 // Topicos MQTT-dev
 #define TOPIC_LUZ_PRD "esp32/nivelLuz"
 #define TOPIC_HUME_SUELO_PRD "esp32/humedadSuelo"
 #define TOPIC_HUME_AIRE_PRD "esp32/humidity"
 #define TOPIC_TEMPERATURA_PRD "esp32/temperature"
+#define TOPIC_VERSION_PRD "esp32/version"
 
 // Puerto del servidor MQTT
 #define MQTT_PORT 1883
