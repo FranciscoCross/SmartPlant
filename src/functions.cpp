@@ -56,7 +56,7 @@ void wifiConfig(void)
   Serial.println();
   // WifiManager Debug Info en Serial Monitor
   wm.setDebugOutput(true);
-
+  
   // set configportal timeout
   wm.setConfigPortalTimeout(CONFIG_TIMEOUT);
 
@@ -71,7 +71,7 @@ void wifiConfig(void)
 
   // WiFi en modo Station
   WiFi.mode(WIFI_STA);
-
+  
   // Setear callback que indica que se deben guardar las configuraciones obtenidas por WifiManager
   wm.setSaveConfigCallback(saveConfigCallback);
 
@@ -327,6 +327,13 @@ void mandarDatos(const int Read, uint8_t *datoArray, uint8_t N_fil, const char *
   }
   prom = prome(datoArray, N_fil);
   dtostrf(prom, 1, 2, datoString);
+
+  // Imprimir por serial el tópico y el valor a enviar
+  //Serial.print("Enviando al tópico: ");
+  //Serial.print(topic);
+  //Serial.print(", Valor: ");
+  //Serial.println(datoString);
+
   pubSubClient.publish(topic, datoString);
 }
 
