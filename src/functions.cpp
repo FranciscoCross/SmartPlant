@@ -94,7 +94,7 @@ void wifiConfig(void)
     if (!wm.startConfigPortal("PowerPotConfigAP", AP_PASS))
     {
       Serial.println("startConfigPortal() fallo y se llego al timeout");
-      resetWifiConfig();
+      //resetWifiConfig();
     }
     else
     {
@@ -106,7 +106,7 @@ void wifiConfig(void)
     if (!wm.autoConnect("PowerPotConfigAP", AP_PASS))
     {
       Serial.println("autoConnect() fallo y se llego al timeout");
-      resetWifiConfig();
+      //resetWifiConfig();
     }
     else
     {
@@ -164,64 +164,9 @@ void callback(char *topic, byte *message, unsigned int length)
   Serial.println();
 
   //------------------Primer Output topic esp32/output1------------------
-  if (String(topic) == "esp32/output1")
+  if (String(topic) == TOPIC_TOGGLE_LED)
   {
     changeState(messageTemp, LED_1);
-  }
-  //------------------Segundo Output topic esp32/output2------------------
-  if (String(topic) == "esp32/output2")
-  {
-    changeState(messageTemp, LED_2);
-  }
-  //------------------Tercer Output topic esp32/output3------------------
-  if (String(topic) == "esp32/output3")
-  {
-    changeState(messageTemp, LED_3);
-  }
-  //------------------Cuarto Output topic esp32/output4------------------
-  if (String(topic) == "esp32/output4")
-  {
-    // Serial.print("Cambio de salida PWM");
-    // Serial.println("messageTemp");
-    ledcWrite(PWM_LED_CHANNEL, messageTemp.toInt());
-  }
-  // AGREGAR MAS TOPICOS PARA PODER TENER MAS GPIO O CONFIG
-  if (String(topic) == "esp32/output5")
-  {
-    // Serial.print("Cambio de NUmero del filtro");
-    // Serial.println("messageTemp");
-    int aux = messageTemp.toInt();
-    if (0 < aux && aux < 20)
-    {
-      N_fil = aux;
-    }
-    // Serial.println(N_fil);
-  }
-  // AGREGAR MAS TOPICOS PARA PODER TENER MAS GPIO O CONFIG
-  if (String(topic) == "esp32/output6")
-  {
-    // Serial.print("Cambio de tiempo muestra");
-    // Serial.println("messageTemp");
-    int aux = messageTemp.toInt();
-    if (0 < aux && aux < 120)
-    {
-      long now = millis();
-      lastMsg = now;
-      tiempoMuestras = aux;
-    }
-  }
-  // AGREGAR MAS TOPICOS PARA PODER TENER MAS GPIO O CONFIG
-  if (String(topic) == "esp32/output7")
-  {
-    // Serial.print("Cambio de tiempo muestra");
-    // Serial.println("messageTemp");
-    int aux = messageTemp.toInt();
-    if (0 < aux && aux < 60)
-    {
-      long now = millis();
-      lastMsg = now;
-      pesoMuestras = aux;
-    }
   }
 }
 
@@ -249,13 +194,7 @@ void reconnect()
     if (pubSubClient.connect(esp32_id, mqtt_user, mqtt_pass))
     {
       Serial.println("Conectado a MQTT");
-      pubSubClient.subscribe("esp32/output1");
-      pubSubClient.subscribe("esp32/output2");
-      pubSubClient.subscribe("esp32/output3");
-      pubSubClient.subscribe("esp32/output4");
-      pubSubClient.subscribe("esp32/output5");
-      pubSubClient.subscribe("esp32/output6");
-      pubSubClient.subscribe("esp32/output7");
+      pubSubClient.subscribe(TOPIC_TOGGLE_LED);
 
       mqtt_error_count = 0;
     }
