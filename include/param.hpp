@@ -25,13 +25,12 @@ param.hpp: se configuran los parámetros del dispositivo
 
 // GPIOs
 #define LED_ONBOARD 2
-#define LED_1 2
-#define LED_2 4
-#define LED_3 15
+#define LED_1 23
+
 
 // AnalogReads
-#define ANALOG_1 34
-#define ANALOG_2 35
+#define ANALOG_1 33
+#define ANALOG_2 36
 
 // Topicos MQTT-dev
 #define TOPIC_LUZ_DEV "esp32-dev/nivelLuz"
@@ -39,6 +38,7 @@ param.hpp: se configuran los parámetros del dispositivo
 #define TOPIC_HUME_AIRE_DEV "esp32-dev/humidity"
 #define TOPIC_TEMPERATURA_DEV "esp32-dev/temperature"
 #define TOPIC_VERSION_DEV "esp32-dev/version"
+#define TOPIC_TOGGLE_LED_DEV "esp32-dev/toggleLed"
 
 // Topicos MQTT-dev
 #define TOPIC_LUZ_QA "esp32-qa/nivelLuz"
@@ -46,6 +46,7 @@ param.hpp: se configuran los parámetros del dispositivo
 #define TOPIC_HUME_AIRE_QA "esp32-qa/humidity"
 #define TOPIC_TEMPERATURA_QA "esp32-qa/temperature"
 #define TOPIC_VERSION_QA "esp32-dev/version"
+#define TOPIC_TOGGLE_LED_QA "esp32-qa/toggleLed"
 
 // Topicos MQTT-dev
 #define TOPIC_LUZ_PRD "esp32/nivelLuz"
@@ -53,6 +54,7 @@ param.hpp: se configuran los parámetros del dispositivo
 #define TOPIC_HUME_AIRE_PRD "esp32/humidity"
 #define TOPIC_TEMPERATURA_PRD "esp32/temperature"
 #define TOPIC_VERSION_PRD "esp32/version"
+#define TOPIC_TOGGLE_LED_PRD "esp32/toggleLed"
 
 // Puerto del servidor MQTT
 #define MQTT_PORT 1883
