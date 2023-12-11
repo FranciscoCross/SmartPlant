@@ -82,7 +82,7 @@ jobs:
           echo "Platformio Init finalizado"
       - name: "platformio check with cppcheck"
         run: |
-          pio check --fail-on-defect=high
+          pio check --environment nodemcu-32s-qa --fail-on-defect=high
           echo "Platformio Check finalizado"
 
   build-upload-qa:

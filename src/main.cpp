@@ -8,8 +8,6 @@ void setup(void)
   //resetWifiConfig();
   pinMode(LED_ONBOARD, OUTPUT);
   pinMode(LED_1, OUTPUT);
-  pinMode(LED_2, OUTPUT);
-  pinMode(LED_3, OUTPUT);
   Serial.begin(115200);
 
   wifiConfig();
