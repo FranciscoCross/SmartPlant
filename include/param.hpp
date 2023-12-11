@@ -45,7 +45,7 @@ param.hpp: se configuran los parámetros del dispositivo
 #define TOPIC_HUME_SUELO_QA "esp32-qa/humedadSuelo"
 #define TOPIC_HUME_AIRE_QA "esp32-qa/humidity"
 #define TOPIC_TEMPERATURA_QA "esp32-qa/temperature"
-#define TOPIC_VERSION_QA "esp32-dev/version"
+#define TOPIC_VERSION_QA "esp32-qa/version"
 #define TOPIC_TOGGLE_LED_QA "esp32-qa/toggleLed"
 
 // Topicos MQTT-dev
