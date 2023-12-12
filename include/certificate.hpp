@@ -1,6 +1,4 @@
-/*
-certificate.hpp: se agrega el certificado SSL otorgado por la autoridad certificante (CA)
-*/
+
 #ifndef certificate_hpp
 #define certificate_hpp
 
