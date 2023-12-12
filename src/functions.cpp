@@ -451,7 +451,8 @@ void configModeCallback(WiFiManager *myWiFiManager)
 
 void initConfig()
 {
-  wifiSecureClient.setCACert(SERVER_CERTIFICATE);  
+  wifiSecureClient.setInsecure();
+  //wifiSecureClient.setCACert(SERVER_CERTIFICATE);  
   pubSubClient.setServer(MQTT_SERV, MQTT_PORT);
   pubSubClient.setCallback(callback);
   Serial.printf("\nBienvenido a Power Pot\n");
