@@ -5,7 +5,7 @@ param.hpp: se configuran los parámetros del dispositivo
 #define param_hpp
 
 // Version del Firmware
-#define FIRMWARE_VERSION 0.62
+#define FIRMWARE_VERSION 0.63
 
 // Actualizaciones de Firmware con autoupdate
 #define UPDATE_JSON_URL_DEV "https://firmware-dev.power-pot.com/update/update.json"
@@ -17,7 +17,7 @@ param.hpp: se configuran los parámetros del dispositivo
 
 // Cantidad de veces que se ejecuta el bucle principal para comprobar actualizaciones de firmware
 
-#define N_LOOPS_CHECK_FIRMWARE_UPDATE 100
+#define N_LOOPS_CHECK_FIRMWARE_UPDATE 20
 
 
 // Tiempo en ms para esperar antes de cambiar el estado del LED
@@ -38,7 +38,7 @@ param.hpp: se configuran los parámetros del dispositivo
 #define TOPIC_HUME_AIRE_DEV "esp32-dev/humidity"
 #define TOPIC_TEMPERATURA_DEV "esp32-dev/temperature"
 #define TOPIC_VERSION_DEV "esp32-dev/version"
-#define TOPIC_TOGGLE_LED_DEV "esp32-dev/toggleLedTest"
+#define TOPIC_TOGGLE_LED_DEV "esp32-dev/toggleLed"
 
 // Topicos MQTT-dev
 #define TOPIC_LUZ_QA "esp32-qa/nivelLuz"
@@ -46,7 +46,7 @@ param.hpp: se configuran los parámetros del dispositivo
 #define TOPIC_HUME_AIRE_QA "esp32-qa/humidity"
 #define TOPIC_TEMPERATURA_QA "esp32-qa/temperature"
 #define TOPIC_VERSION_QA "esp32-qa/version"
-#define TOPIC_TOGGLE_LED_QA "esp32-qa/toggleLedTest"
+#define TOPIC_TOGGLE_LED_QA "esp32-qa/toggleLed"
 
 // Topicos MQTT-dev
 #define TOPIC_LUZ_PRD "esp32/nivelLuz"
@@ -54,7 +54,7 @@ param.hpp: se configuran los parámetros del dispositivo
 #define TOPIC_HUME_AIRE_PRD "esp32/humidity"
 #define TOPIC_TEMPERATURA_PRD "esp32/temperature"
 #define TOPIC_VERSION_PRD "esp32/version"
-#define TOPIC_TOGGLE_LED_PRD "esp32/toggleLedTest"
+#define TOPIC_TOGGLE_LED_PRD "esp32/toggleLed"
 
 // Puerto del servidor MQTT
 #define MQTT_PORT 1883
